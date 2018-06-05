@@ -2,13 +2,16 @@
 This is a program that will generate CRUD web application automatically.
 
 # Dependency
-*Springboot 2*
+**Springboot 2**
 
-*gradle*
+**gradle**
 
-*OracleJet*
+**OracleJet**
 
-*nodeJs*
+**nodeJs**
+
 -ejs
+
 -npm install xml2js
+
 -npm install mkdirp
