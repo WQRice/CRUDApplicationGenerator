@@ -2,13 +2,13 @@
 This is a program that will generate CRUD web application automatically.
 
 # Dependency
-**Springboot 2**
+**1. Springboot 2**
 
-**gradle v4.7**
+**2. gradle v4.7**
 
-**OracleJet v5.0.0**
+**3. OracleJet v5.0.0**
 
-**nodeJs v8.11.2**
+**4. nodeJs v8.11.2**
 
 - ejs
 
