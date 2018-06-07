@@ -10,7 +10,12 @@ module.exports = class extends Generator {
 	
     // Next, add your custom code
     this.option('babel'); // This method adds support for a `--babel` flag
+<<<<<<< .merge_file_4IjyGr
     this.log("This is inside /app");
+=======
+    
+    fs.removeSync('XML/.DS_Store');
+>>>>>>> .merge_file_moVdNp
     jpaList=fs.readdirSync('XML');
 //     this.log(jpaList);
   }
