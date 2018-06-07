@@ -1,7 +1,7 @@
 {
   "generator-starter": {
     "promptValues": {
-      "packageName": "sample"
+      "packageName": "edu.rice"
     }
   }
 }

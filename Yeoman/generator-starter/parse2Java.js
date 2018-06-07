@@ -60,6 +60,29 @@ parseString(xml, function (err, result) {
 	var template = fs.readFileSync('template/application.ejs', 'utf-8');
 	var file = ejs.render ( template , data );
 	fs.outputFileSync("Sample/src/main/java/OITWeb/"+packageName+"/"+className+'Application.java', file, 'utf8');
+
+
+
+
+	//produce the back-end dynamic file
+
+	
+    var template = fs.readFileSync('template/index_html_template.ejs', 'utf-8');
+    var file = ejs.render ( template , data );
+    fs.writeFileSync("Sample/src/main/resources/static/index.html", file, 'utf8');
+
+    var template = fs.readFileSync('template/appController_js_template.ejs', 'utf-8');
+    var file = ejs.render ( template , data );
+    fs.writeFileSync("Sample/src/main/resources/static/js/appController.js", file, 'utf8');
+
+
+     var template = fs.readFileSync('template/view_html_template.ejs', 'utf-8');
+     var file = ejs.render ( template , data );
+     fs.writeFileSync("Sample/src/main/resources/static/js/views/"+className+"Table.html", file, 'utf8');
+  
+    var template = fs.readFileSync('template/viewModel_js_template.ejs', 'utf-8');
+    var file = ejs.render ( template , data );
+    fs.writeFileSync("Sample/src/main/resources/static/js/viewModels/"+className+"Table.js", file, 'utf8');	
 	
  });
 }
