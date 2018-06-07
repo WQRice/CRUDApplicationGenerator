@@ -1,0 +1,7 @@
+{
+  "generator-starter": {
+    "promptValues": {
+      "packageName": "sample"
+    }
+  }
+}
