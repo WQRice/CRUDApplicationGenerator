@@ -10,7 +10,7 @@ module.exports=function(jpaFile,packageName){
 //   console.log(file);
 // });
 // fs.removeSync('Sample');
-// fs.copySync('backendStatic', 'Sample');
+// fs.copySync('webStatic', 'Sample');
 
 var parseString = require('xml2js').parseString;
 var xml = fs.readFileSync('XML/'+jpaFile, 'utf-8');
@@ -37,27 +37,27 @@ parseString(xml, function (err, result) {
 //     });
     
     //produce controller
-    var template = fs.readFileSync('template/controller.ejs', 'utf-8');
+    var template = fs.readFileSync('backendTemplate/controller.ejs', 'utf-8');
 	var file = ejs.render ( template , data );
 	fs.outputFileSync("Sample/src/main/java/OITWeb/"+packageName+"/controller/"+className+'Controller.java', file, 'utf8');
 	
 	//produce entity class
-	var template = fs.readFileSync('template/entity.ejs', 'utf-8');
+	var template = fs.readFileSync('backendTemplate/entity.ejs', 'utf-8');
 	var file = ejs.render ( template , data );
 	fs.outputFileSync("Sample/src/main/java/OITWeb/"+packageName+"/model/"+className+'.java', file, 'utf8');
 	
 	//produce exception class
-	var template = fs.readFileSync('template/exception.ejs', 'utf-8');
+	var template = fs.readFileSync('backendTemplate/exception.ejs', 'utf-8');
 	var file = ejs.render ( template , data );
 	fs.outputFileSync("Sample/src/main/java/OITWeb/"+packageName+"/exception/"+'ResourceNotFoundException.java', file, 'utf8');
 	
 	//produce repository class
-	var template = fs.readFileSync('template/repository.ejs', 'utf-8');
+	var template = fs.readFileSync('backendTemplate/repository.ejs', 'utf-8');
 	var file = ejs.render ( template , data );
 	fs.outputFileSync("Sample/src/main/java/OITWeb/"+packageName+"/repository/"+className+'Repository.java', file, 'utf8');
 	
 	//produce repository class
-	var template = fs.readFileSync('template/application.ejs', 'utf-8');
+	var template = fs.readFileSync('backendTemplate/application.ejs', 'utf-8');
 	var file = ejs.render ( template , data );
 	fs.outputFileSync("Sample/src/main/java/OITWeb/"+packageName+"/"+className+'Application.java', file, 'utf8');
 	
