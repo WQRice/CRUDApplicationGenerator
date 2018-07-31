@@ -15,6 +15,9 @@
 - npm install fs-extra
 
 ## Install
+```
+npm install https://WQRice@bitbucket.org/summerinterns2018/spring-ojet-generator.git#Deploy
+```
 
 ## Usage
 
