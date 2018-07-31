@@ -1,7 +1,8 @@
 # CRUDApplicationGenerator
-This is a program that will generate CRUD web application automatically.
+> This is a program that will generate CRUD web application automatically.
 
-# Dependency
+
+## Dependency
 **1. Springboot 2**
 
 **2. gradle v4.7**
@@ -12,3 +13,9 @@ This is a program that will generate CRUD web application automatically.
 - ejs
 - npm install xml2js
 - npm install fs-extra
+
+## Install
+
+## Usage
+
+## License
