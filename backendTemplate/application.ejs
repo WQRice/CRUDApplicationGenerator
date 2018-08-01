@@ -6,9 +6,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
-public class <%=PACKAGENAME[0].toUpperCase() + PACKAGENAME.slice(1)%>Application {
+public class <%=caseConvert.upFirst(APPNAME)%>Application {
     public static void main(String[] args) {
-        System.out.println("Hello word!");
-        SpringApplication.run(<%=PACKAGENAME[0].toUpperCase() + PACKAGENAME.slice(1)%>Application.class, args);
+        SpringApplication.run(<%=caseConvert.upFirst(APPNAME)%>Application.class, args);
     }
 }
