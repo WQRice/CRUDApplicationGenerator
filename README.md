@@ -15,12 +15,12 @@
 - npm install fs-extra
 
 ## Install
--Go to the directory you want to install this package or skip this step to install it globally.
+- Go to the directory you want to install this package or skip this step to install it globally.
 ```
 cd directoryPath
 npm init
 ```
--install it from our deploy branch 
+- install it from our deploy branch 
 ```
 npm install https://WQRice@bitbucket.org/summerinterns2018/spring-ojet-generator.git#Deploy
 ```
@@ -29,6 +29,6 @@ npm install https://WQRice@bitbucket.org/summerinterns2018/spring-ojet-generator
 
 ## Instruction:
 **Use jeddict to build your model.**
--drag 
+- drag 
 
 ## License
