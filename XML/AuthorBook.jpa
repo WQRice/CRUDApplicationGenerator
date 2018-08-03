@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jpa:entity-mappings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:java="http://jcp.org/en/jsr/detail?id=270" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jpa="http://java.sun.com/xml/ns/persistence/orm" v="4.9" rws="_153299268602213" Pws="_153299268602213" cws="_153299268602213" persistenceUnitName="DEFAULT_PU" sm="false" xs="false" id="_153299268602212" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_1.xsd">
+    <jpa:entity compositePrimaryKeyClass="BookPK" abs="false" class="Book" v="true" xre="false" m="false" rootElement="_153299268602212" id="_153299269076714">
+        <jpa:ath>st8li</jpa:ath>
+        <jpa:attributes>
+            <jpa:basic attribute-type="String" v="true" xvt="" name="title" uil="Title" id="_153299270577617">
+                <jpa:xwm/>
+                <jpa:xm/>
+                <jpa:bv>
+                    <jpa:nn/>
+                </jpa:bv>
+            </jpa:basic>
+            <jpa:basic attribute-type="String" v="true" xvt="" name="description" uil="Description" id="_153299272394418">
+                <jpa:xwm/>
+                <jpa:xm/>
+            </jpa:basic>
+            <jpa:basic attribute-type="java.sql.Date" v="true" xvt="" name="publicationDate" uil="Publication date" id="_153304088074019">
+                <jpa:xwm/>
+                <jpa:xm/>
+            </jpa:basic>
+            <jpa:basic attribute-type="double" v="true" xvt="" name="price" uil="Price" id="_153304088995120">
+                <jpa:xwm/>
+                <jpa:xm/>
+            </jpa:basic>
+            <jpa:many-to-one primaryKey="false" connected-entity-id="_153304158229825" connected-attribute-id="_153304607773354" v="true" name="author" id="_153304607773253"/>
+            <jpa:one-to-one own="true" primaryKey="false" connected-entity-id="_153304163474231" v="true" name="genre" id="_153304192710142"/>
+            <jpa:id attribute-type="Long" v="true" xvt="" name="id" id="_153299269077615">
+                <jpa:xwm/>
+                <jpa:xm/>
+                <jpa:generated-value strategy="AUTO"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:nq e="false" name="Book.findAll">
+            <jpa:query>Select e from Book e</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Book.findByTitle">
+            <jpa:query>Select e from Book e where e.title=:title</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Book.findByDescription">
+            <jpa:query>Select e from Book e where e.description=:description</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Book.findByPublicationDate">
+            <jpa:query>Select b from Book b where b.publicationDate=:publicationDate</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Book.findByPrice">
+            <jpa:query>Select b from Book b where b.price=:price</jpa:query>
+        </jpa:nq>
+    </jpa:entity>
+    <jpa:entity compositePrimaryKeyClass="AuthorPK" abs="false" class="Author" v="true" xre="false" m="false" rootElement="_153299268602212" id="_153304158229825">
+        <jpa:ath>st8li</jpa:ath>
+        <jpa:attributes>
+            <jpa:basic attribute-type="String" v="true" xvt="" name="firstName" uil="First Name" id="_153304159370428">
+                <jpa:xwm/>
+                <jpa:xm/>
+            </jpa:basic>
+            <jpa:basic attribute-type="String" v="true" xvt="" name="lastName" uil="Last Name" id="_153304160152029">
+                <jpa:xwm/>
+                <jpa:xm/>
+            </jpa:basic>
+            <jpa:basic attribute-type="java.sql.Date" v="true" xvt="" name="birthDate" uil="Birthdate" id="_153304161605930">
+                <jpa:xwm/>
+                <jpa:xm/>
+            </jpa:basic>
+            <jpa:one-to-many collection-type="java.util.List" cit="java.util.ArrayList" connected-entity-id="_153299269076714" connected-attribute-id="_153304607773253" v="true" name="books" id="_153304607773354"/>
+            <jpa:id attribute-type="Long" v="true" xvt="" name="id" id="_153304158229926">
+                <jpa:xwm/>
+                <jpa:xm/>
+                <jpa:generated-value strategy="AUTO"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:nq e="false" name="Author.findAll">
+            <jpa:query>Select e from Author e</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Author.findByFirstName">
+            <jpa:query>Select a from Author a where a.firstName=:firstName</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Author.findByLastName">
+            <jpa:query>Select a from Author a where a.lastName=:lastName</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Author.findByBirthDate">
+            <jpa:query>Select a from Author a where a.birthDate=:birthDate</jpa:query>
+        </jpa:nq>
+    </jpa:entity>
+    <jpa:entity compositePrimaryKeyClass="GenrePK" abs="false" class="Genre" v="true" xre="false" m="false" rootElement="_153299268602212" id="_153304163474231">
+        <jpa:ath>st8li</jpa:ath>
+        <jpa:attributes>
+            <jpa:basic attribute-type="String" v="true" xvt="" name="code" uil="Code" id="_153304165007834">
+                <jpa:xwm/>
+                <jpa:xm/>
+            </jpa:basic>
+            <jpa:basic attribute-type="String" v="true" xvt="" name="description" uil="Description" id="_153304170498035">
+                <jpa:xwm/>
+                <jpa:xm/>
+            </jpa:basic>
+            <jpa:id attribute-type="Long" v="true" xvt="" name="id" id="_153304163474332">
+                <jpa:xwm/>
+                <jpa:xm/>
+                <jpa:generated-value strategy="AUTO"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:nq e="false" name="Genre.findAll">
+            <jpa:query>Select e from Genre e</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Genre.findByCode">
+            <jpa:query>Select g from Genre g where g.code=:code</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Genre.findByDescription">
+            <jpa:query>Select g from Genre g where g.description=:description</jpa:query>
+        </jpa:nq>
+    </jpa:entity>
+    <jpa:snp loc="BEFORE_PACKAGE" e="true">/**
+ * This file was generated by the Jeddict
+ */</jpa:snp>
+    <jpa:c>
+        <ct>java.util.List</ct>
+        <ct>java.util.Set</ct>
+        <ct>java.util.Map</ct>
+        <ct>java.util.Collection</ct>
+        <cit>java.util.ArrayList</cit>
+        <cit>java.util.LinkedList</cit>
+        <cit>java.util.HashSet</cit>
+        <cit>java.util.TreeSet</cit>
+        <cit>java.util.HashMap</cit>
+    </jpa:c>
+    <jpa:wsl>
+        <jpa:ws n="Main" id="_153299268602213">
+            <i ref="_153304163474231" x="711" y="274"/>
+            <i ref="_153299269076714" x="418" y="252"/>
+            <i ref="_153304158229825" x="150" y="239"/>
+        </jpa:ws>
+    </jpa:wsl>
+</jpa:entity-mappings>
