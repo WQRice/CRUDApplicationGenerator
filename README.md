@@ -29,6 +29,6 @@ npm install https://WQRice@bitbucket.org/summerinterns2018/spring-ojet-generator
 
 ## Instruction:
 **Use jeddict to build your model.**
-- drag 
+- 
 
 ## License
