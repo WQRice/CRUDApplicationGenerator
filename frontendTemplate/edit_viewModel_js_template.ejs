@@ -23,7 +23,9 @@ for (var i in oneArray) {
         inputAttRef: "input"+myself.CLASSNAME+oneArray[i]+"Array",
         attInSelfName: downFirst(oneArray[i])+"In"+myself.CLASSNAME,
         selfInAttName: downFirst(myself.CLASSNAME)+"In" + oneArray[i],
-        inputColumnArray : "input" + oneArray[i] +"ColumnArray"
+        inputColumnArray : "input" + oneArray[i] +"ColumnArray",
+        dropInputAttData: "drop_input"+ oneArray[i] + "DataProvider"
+
 
     }
 }
@@ -41,8 +43,19 @@ for (var i in manyArray) {
 
 var entityMap = {};
 for(var i in dataArray) {
-    entityMap[dataArray[i].CLASSNAME] = dataArray[i].BASIC;
+    var ele = {};
+    ele.basic = dataArray[i].BASIC;
 
+    var labelMap = [];
+
+    for (var j in dataArray[i].BASIC) {
+        if (dataArray[i].BASIC[j]['$']['uil']!=undefined) {
+            labelMap[j] = dataArray[i].BASIC[j]['$']['uil'];
+        } else {labelMap[j] = dataArray[i].CLASSNAME +" "+ dataArray[i].BASIC[j]['$']['name']; }
+    }
+
+    ele.labels = labelMap;
+    entityMap[dataArray[i].CLASSNAME] = ele;
 }
 
 
@@ -50,7 +63,7 @@ for(var i in dataArray) {
 
 
 /**
- * Add <%=myself.CLASSNAME%> module
+ * Edit <%=myself.CLASSNAME%> module
  */
 
 
@@ -68,6 +81,67 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojcheckboxset'
             // document.getElementById("buttontext").innerHTML = 'Update';
             // document.getElementById("dialogTitleId").innerHTML = 'Edit Course Record';
 
+        for (var property in self.attMap){
+            if(self.attMap.hasOwnProperty(property)){
+                if(self.dropdownMap.hasOwnProperty(property)){
+                    //alert("drop_ItemOrder"+property+"Array");
+                    self["drop_ItemOrder"+property+"Array"].removeAll();
+                    self["get"+property]();
+                }
+            }
+        }
+
+        if(oj.Router.rootInstance.retrieve()!=undefined && oj.Router.rootInstance.retrieve().length!=0 && oj.Router.rootInstance.retrieve()[oj.Router.rootInstance.retrieve().length-1].from == "Edit<%-myself.CLASSNAME%>") {
+
+            var stack = oj.Router.rootInstance.retrieve();
+            var popped = stack.pop();
+            //alert(JSON.stringify(popped));
+
+            if(stack === []) {
+                oj.Router.rootInstance.store(null);
+                } else {
+                oj.Router.rootInstance.store(stack);
+            }
+
+
+            self.input<%=myself.CLASSNAME%>Id(popped.id);
+
+            <%for(var i=0; i<myself.BASIC.length; i++){%>
+                self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>(popped.<%-myself.BASIC[i]['$']['name']%>);
+            <%}%>
+
+            for (var property in self.attMap){
+                if(self.attMap.hasOwnProperty(property)){
+                    if(!self.dropdownMap.hasOwnProperty(property)){
+                        if($.inArray(property, self.oneArray)>=0) {
+
+                        self[self.attMap[property].inputAttRef].removeAll();
+                        self[self.attMap[property].inputAttRef].push(popped[property]);
+                        }
+                    } else {
+                        self[self.attMap[property].dropInputAttData](null);
+                        if(popped[property]!=null && !popped[property].hasOwnProperty('value')) {
+                            self[property + "_selectValOpt"](
+                                {
+                                value: popped[property].id,
+                                label: self.repNameCalc(property, popped[property])
+                                }
+                            );
+                            } else {
+                            self[property + "_selectValOpt"](
+                                popped[property]
+                            );
+                        }
+
+
+                        //self["drop_ItemOrder"+property+"Array"].removeAll();
+                        //self["get"+property]();
+                    }
+                }
+
+            }
+
+            } else {
 
 
             self.input<%=myself.CLASSNAME%>Id(rootViewModel.frontToEditData().id);
@@ -82,6 +156,11 @@ self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>(rootViewModel.fro
 
             // for many to one relationship
             for (var i in self.oneArray) {
+
+                (function(i) {
+
+            if(!self.dropdownMap.hasOwnProperty(self.oneArray[i])){
+
                 var url = 'http://localhost:8080/<%=myself.CLASSNAME%>/'+self.input<%=myself.CLASSNAME%>Id()+"/"+self.attMap[self.oneArray[i]].attInSelfName;
 
                 // alert(url);
@@ -92,7 +171,27 @@ self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>(rootViewModel.fro
                     self[self.attMap[self.oneArray[i]].inputAttRef].push(output);
                     // alert(JSON.stringify(output));
 
+                    });
+                } else {
+                var url = 'http://localhost:8080/ItemOrder/'+self.inputItemOrderId()+"/"+self.attMap[self.oneArray[i]].attInSelfName;
+
+                // alert(url);
+                    self[self.attMap[self.oneArray[i]].dropInputAttData](null);
+                //self[self.attMap[self.oneArray[i]].inputAttRef].removeAll();
+                    getAssociatedAtt(url, function (output) {
+
+                //delete output["_links"];
+
+                self[self.oneArray[i] + "_selectValOpt"](
+                        {
+                        value: output.id,
+                        label: self.repNameCalc(self.oneArray[i], output)
+                        }
+                );
                 });
+
+            }
+                })(i);
             }
             // delete topush.ele["_links"];
             // self.inputCourseProfessorArray.push(topush.ele);
@@ -101,6 +200,9 @@ self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>(rootViewModel.fro
 
                 // var toPushList = {};
                 for(var j in self.manyArray) {
+
+                    (function(j) {
+
                     var url = 'http://localhost:8080/<%=myself.CLASSNAME%>/'+self.input<%=myself.CLASSNAME%>Id()+"/"+self.attMap[self.manyArray[j]].attInSelfName;
 
                     self[self.attMap[self.manyArray[j]].inputAttRef].removeAll();
@@ -112,9 +214,12 @@ self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>(rootViewModel.fro
                         }
 
                     });
+                    })(j);
+
 
             }
 
+}
 
         };
 
@@ -123,7 +228,20 @@ self.oneArray = <%- JSON.stringify(oneArray)%>;
 self.manyArray = <%- JSON.stringify(manyArray)%>;
 
 self.attMap = <%- JSON.stringify(attMap, null, 4) %>;
+self.dropdownMap = <%- JSON.stringify(myself.REPNAMEMAP) %>;
 
+//calculated the concatenated name for dropdown list
+self.repNameCalc = function(property, data){
+    var repName = "";
+    var namelist = self.dropdownMap[property];
+        for (var i=0; i<namelist.length; i++) {
+            if(data[namelist[i]]!=null) {
+                var space = (i == namelist.length-1) ? "" : " ";
+                repName = repName + data[namelist[i]] +space ;
+            }
+        }
+    return repName;
+};
 
         self.curAtt = ko.observable("");
 
@@ -158,25 +276,88 @@ self.input<%=myself.CLASSNAME + myself.BASIC[ii]['$']['name']%> = ko.observable(
 
 // for  one array (many to one or one to one)
 
+self.mapFields = function(item) {
+    var data = item['data'];
+    var mappedItem = {};
+    mappedItem['data'] = {};
+    mappedItem['data']['label'] = data['label'];
+    mappedItem['data']['value'] = data['id'];
+    mappedItem['metadata'] = {'key': data['id']};
+
+    return mappedItem;
+};
+self.dataMapping = {'mapFields': self.mapFields};
+
+
 <% for (var jj in oneArray) {%>
-self.input<%=myself.CLASSNAME+oneArray[jj]%>Array = ko.observableArray().extend({ deferred: true });
-self.input<%=oneArray[jj]%>DataProvider = new oj.ArrayDataProvider(self.input<%=myself.CLASSNAME+oneArray[jj]%>Array, {keyAttributes: 'id'});
 
-self.input<%=oneArray[jj]%>ColumnArray = [
+<%if(myself.REPNAMEMAP[oneArray[jj]]== undefined) {%>
 
-{"headerText": "id", "field": "id", "headerStyle": 'font-weight:bold'},
+    self.input<%=myself.CLASSNAME+oneArray[jj]%>Array = ko.observableArray().extend({ deferred: true });
+    self.input<%=oneArray[jj]%>DataProvider = new oj.ArrayDataProvider(self.input<%=myself.CLASSNAME+oneArray[jj]%>Array, {keyAttributes: 'id'});
 
-<% for(var j in entityMap[oneArray[jj]]) {-%>
+    self.input<%=oneArray[jj]%>ColumnArray = [
+
+    {"headerText": "<%-oneArray[jj]%> Id", "field": "id", "headerStyle": 'font-weight:bold;  Height:8px; background-color: white'},
+
+<% for(var j in entityMap[oneArray[jj]].basic) {-%>
 {
-"headerText": "<%-entityMap[oneArray[jj]][j]['$']['name']%>",
-"field" : "<%-entityMap[oneArray[jj]][j]['$']['name']%>",
-"headerStyle" : 'font-weight:bold'
+"headerText": "<%-entityMap[oneArray[jj]].labels[j]%>",
+"field" : "<%-entityMap[oneArray[jj]].basic[j]['$']['name']%>",
+"headerStyle" : 'font-weight:bold;  Height:8px; background-color: white'
 }
 <%if(j!= entityMap[oneArray[jj]].length-1) {-%>
 ,
 <%}-%>
 <%}-%>
 ];
+
+
+<%} else {%>
+
+self.<%=oneArray[jj]%>_selectValOpt = ko.observable();
+
+self.drop_input<%=oneArray[jj]%>DataProvider = ko.observable();
+
+self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array = ko.observableArray().extend({ deferred: true });
+
+
+self.drop_<%-oneArray[jj]%>Arraydataprovider = new oj.ArrayDataProvider(self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array, {keyAttributes: 'id'});
+self.drop_<%-oneArray[jj]%>dataProvider = new oj.ListDataProviderView(self.drop_<%-oneArray[jj]%>Arraydataprovider, {'dataMapping':  self.dataMapping});
+
+//self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push({
+//        value: "blank",
+//        label: ""
+//    });
+self.get<%-oneArray[jj]%> = function(){
+$.get('http://localhost:8080/<%-oneArray[jj]%>', function (data) {
+//// alert(JSON.stringify(data));
+//console.log(data);
+
+// for (var i = 0; i < data.length; i++) {
+var extractedData = data["_embedded"].<%-oneArray[jj]%>;
+//// alert(JSON.stringify(extractedData));
+
+
+for (var i = 0; i < extractedData.length; i++) {
+//// alert(i);
+//// alert("test");
+
+var topush = {
+id: extractedData[i].id,
+label: self.repNameCalc("Customer", extractedData[i])
+
+};
+self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
+
+}
+
+
+});
+};
+
+<%}%>
+
 <%}%>
 
         self.attObservableArray = ko.observableArray();
@@ -208,15 +389,15 @@ self.input<%=manyArray[jj]%>DataProvider = new oj.ArrayDataProvider(self.input<%
 
 self.input<%=manyArray[jj]%>ColumnArray = [
 
-{"headerText": "id", "field": "id", "headerStyle": 'font-weight:bold'},
+{"headerText": "<%-manyArray[jj]%> Id", "field": "id", "headerStyle": 'font-weight:bold'},
 
-<% for(var j in entityMap[manyArray[jj]]) {-%>
+<% for(var j in entityMap[manyArray[jj]].basic) {-%>
 {
-"headerText": "<%-entityMap[manyArray[jj]][j]['$']['name']%>",
-"field" : "<%-entityMap[manyArray[jj]][j]['$']['name']%>",
+"headerText": "<%-entityMap[manyArray[jj]].labels[j]%>",
+"field" : "<%-entityMap[manyArray[jj]].basic[j]['$']['name']%>",
 "headerStyle" : 'font-weight:bold'
 }
-<%if(j!= entityMap[manyArray[jj]].length-1) {-%>
+<%if(j!= entityMap[manyArray[jj]].basic.length-1) {-%>
 ,
 <%}-%>
 <%}-%>
@@ -862,12 +1043,30 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
             for (var j in self.oneArray) {
 
-                var inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
+                var inputAttRef;
+                var array = [];
+
+                //var inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
+
+                if(self.dropdownMap.hasOwnProperty(self.oneArray[j])){
+                    inputAttRef = self.attMap[self.oneArray[j]].dropInputAttData;
+                    if (self[inputAttRef]()!=null){
+                        array.push({
+                        id : self[inputAttRef]()
+                        });
+                    //attId = "value";
+                    }
+                        } else {
+                            inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
+                            if(self[inputAttRef]()[0]!=null){
+                            array = self[inputAttRef]();
+                            }
+                        }
 
 
-                if (self[inputAttRef]().length > 0) {
+                if (array.length > 0) {
 
-                    var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + self.oneArray[j] + "/" + self[inputAttRef]()[0].id;
+                    var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + self.oneArray[j] + "/" + array[0].id;
 
                    // alert(associationUrl);
                     queuechain2 = queuechain2.then(
@@ -1001,20 +1200,117 @@ self.input<%=manyArray[jj]%>ColumnArray = [
         self.backButtonClick=function(){
             //alert("hi, I going back to page: "+oj.Router.rootInstance.retrieve().page);
             oj.Router.rootInstance.go("<%=myself.CLASSNAME%>");
-        }
+        };
+
+
+
+
+<% for (var jj in oneArray) {%>
+    self.to<%-oneArray[jj]%> = function() {
+
+    //var rootViewModel = ko.dataFor(document.getElementById('globalBody'));
+    var stack = oj.Router.rootInstance.retrieve() == undefined? [] : oj.Router.rootInstance.retrieve();
+
+
+    //alert(self.inputItemOrderOrderLineArray());
+    stack.push( {
+        'from':"Edit<%-myself.CLASSNAME%>",
+        //'data':
+        //{
+        'id': self.input<%-myself.CLASSNAME%>Id(),
+
+        <%for(var i=0; i<myself.BASIC.length; i++){-%>
+
+            '<%-myself.BASIC[i]['$']['name']%>': self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>()
+            <%if( (oneArray.length + manyArray.length) != 0 || i!=myself.BASIC.length-1) {-%>
+            ,
+            <%}-%>
+        <%}-%>
+
+        <%for(var j in oneArray) {-%>
+            '<%-oneArray[j]%>':
+            <%if(myself.REPNAMEMAP.hasOwnProperty(oneArray[j])) {-%>
+                self.<%-oneArray[j]%>_selectValOpt()
+            <%}else {-%>
+            self.input<%=myself.CLASSNAME + oneArray[j]%>Array()[0]
+            <%}-%>
+            <%if(manyArray.length != 0 || j !=oneArray.length-1) {-%>
+            ,
+            <%}-%>
+        <%}-%>
+
+        <%for(var k in manyArray) {-%>
+            '<%-manyArray[k]%>': self.input<%=myself.CLASSNAME + manyArray[k]%>Array()
+            <%if( k !=oneArray.length-1) {-%>
+            ,
+            <%}-%>
+        <%}-%>
+
+        //}
+    });
+
+    oj.Router.rootInstance.store(stack);
+
+    oj.Router.rootInstance.go("<%-oneArray[jj]%>");
+
+
+    };
+<%}%>
+
+
+<% for (var jj in manyArray) {%>
+        self.to<%-manyArray[jj]%> = function() {
+
+        //var rootViewModel = ko.dataFor(document.getElementById('globalBody'));
+        var stack = oj.Router.rootInstance.retrieve() == undefined? [] : oj.Router.rootInstance.retrieve();
+
+
+        //alert(self.inputItemOrderOrderLineArray());
+        stack.push( {
+        'from':"Edit<%-myself.CLASSNAME%>",
+        //'data':
+        //{
+            'id': self.input<%-myself.CLASSNAME%>Id(),
+
+            <%for(var i=0; i<myself.BASIC.length; i++){-%>
+                '<%-myself.BASIC[i]['$']['name']%>': self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>()
+                <%if( (oneArray.length + manyArray.length) != 0 || i!=myself.BASIC.length-1) {-%>
+                ,
+                <%}-%>
+            <%}%>
+
+            <%for(var j in oneArray) {-%>
+                '<%-oneArray[j]%>':
+                <%if(myself.REPNAMEMAP.hasOwnProperty(oneArray[j])) {-%>
+                self.<%-oneArray[j]%>_selectValOpt()
+                <%}else {-%>
+                self.input<%=myself.CLASSNAME + oneArray[j]%>Array()[0]
+                <%}-%>
+                <%if(manyArray.length != 0 || j !=oneArray.length-1) {-%>
+                ,
+                <%}-%>
+            <%}-%>
+
+            <%for(var k in manyArray) {-%>
+                '<%-manyArray[k]%>': self.input<%=myself.CLASSNAME + manyArray[k]%>Array()
+                <%if( k !=oneArray.length-1) {-%>
+                ,
+                <%}-%>
+            <%}-%>
+        //}
+        });
+
+        oj.Router.rootInstance.store(stack);
+
+        oj.Router.rootInstance.go("<%-manyArray[jj]%>");
+
+
+        };
+<%}%>
 
     }
 
     vm=new viewModel;
-
-    $(document).ready
-    (
-        function()
-        {
-
-
-        }
-    );
 
     return vm;
 });

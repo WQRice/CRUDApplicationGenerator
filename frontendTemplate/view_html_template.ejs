@@ -86,6 +86,39 @@ for (var j in BASIC) {
 
                 </div>
 
+                <%if((mappedBy[CLASSNAME].oneByOne.length + mappedBy[CLASSNAME].oneByMany.length + mappedBy[CLASSNAME].manyByOne.length + mappedBy[CLASSNAME].manyByMany.length) !=0) {%>
+
+                <div slot="footer" style ="margin-top: 20px; margin-left: 8px">
+                    <!--<oj-button id='savebutton' on-oj-action='[[saveButtonClick]]'-->
+                    <!--disabled = '{{isDisable}}'-->
+                    <!--data-bind = "visible: notDisable"-->
+                    <!--&gt;-->
+                    <!--<span slot='endIcon' class="icon-check demo-icon-font-18"></span>-->
+
+                    <!--Save-->
+                    <!--</oj-button>-->
+
+                    <oj-button id='backbutton' on-oj-action='[[backButtonClick]]'
+                               disabled = '{{isDisable}}'
+                               data-bind = "visible: notDisable"
+
+                    >
+                        <span slot='startIcon' class="icon-arrow-left demo-icon-font-18"></span>
+                        Back
+                    </oj-button>
+
+                    <oj-button id='savebutton' on-oj-action='[[saveButtonClick]]'
+                               disabled = '{{saveIsDisable}}'
+                               data-bind = "visible: saveNotDisable"
+                    >
+                        <span slot='startIcon' class="icon-check demo-icon-font-18"></span>
+
+                        Save
+                    </oj-button>
+
+                </div>
+                <%}%>
+
                 <script type="text/html" id="button_tmpl">
                     <td>
                         <oj-button display='icons' class='oj-button-sm demo-button-lightblue' 

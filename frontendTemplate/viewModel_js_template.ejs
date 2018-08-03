@@ -59,12 +59,37 @@ function(oj, ko, $)
       self.manyArray = <%- JSON.stringify(manyArray)%>;
 
       self.attMap = <%- JSON.stringify(attMap, null, 4) %>;
+      self.mappedBy_oneByOne = <%- JSON.stringify(mappedBy[CLASSNAME].oneByOne)%>;
+      self.mappedBy_oneByMany = <%- JSON.stringify(mappedBy[CLASSNAME].oneByMany)%>;
 
 
           self.<%=CLASSNAME%>ObservableArray = ko.observableArray();
       
 
       self.initialize = function() {
+
+
+  <%if((mappedBy[CLASSNAME].oneByOne.length + mappedBy[CLASSNAME].oneByMany.length + mappedBy[CLASSNAME].manyByOne.length + mappedBy[CLASSNAME].manyByMany.length) !=0) {%>
+        //self.saveIsDisable(true);
+        //self.isDisable(true);
+
+        if (oj.Router.rootInstance.retrieve() != undefined && oj.Router.rootInstance.retrieve().length !== 0) {
+             self.isDisable(false);
+            var end = oj.Router.rootInstance.retrieve()[oj.Router.rootInstance.retrieve().length-1];
+            var fromEntity = "";
+            if(end.from.substring(0,3) == "Add") {
+                fromEntity = end.from.substring(3);
+            } else {
+                fromEntity = end.from.substring(4);
+            }
+            if($.inArray(fromEntity, self.mappedBy_oneByOne) >= 0 || $.inArray(fromEntity, self.mappedBy_oneByMany) >= 0) {
+                    self.saveIsDisable(false);
+                }
+
+            alert(JSON.stringify(oj.Router.rootInstance.retrieve()));
+
+        }
+<%}%>
 
       self.<%=CLASSNAME%>ObservableArray.removeAll();
 
@@ -114,7 +139,9 @@ function(oj, ko, $)
                                     <%if(REPNAMEMAP[oneArray[j]]!= undefined) {-%>
                                       var repname = "";
                                       <%for(var jj in REPNAMEMAP[oneArray[j]]){-%>
-                                          repname = repname + "<%=jj==0?"" : " "%>" + data0.<%-REPNAMEMAP[oneArray[j]][jj]%>;
+                                        if (data0.<%-REPNAMEMAP[oneArray[j]][jj]%>!=null) {
+                                        repname = repname + data0.<%-REPNAMEMAP[oneArray[j]][jj]%> + "<%-(jj == REPNAMEMAP[oneArray[j]].length-1) ? "" : " "%>";
+                                        }
                                       <%}-%>
                                       topush['<%-CLASSNAME%>_<%-downFirst(oneArray[j])%>'] = repname;
                                     <%} else {-%>
@@ -174,7 +201,7 @@ function(oj, ko, $)
   
 
               self.addButtonClick=function(){
-                oj.Router.rootInstance.store({'page':"<%-CLASSNAME%>"});
+                //oj.Router.rootInstance.store({'page':"<%-CLASSNAME%>"});
                 oj.Router.rootInstance.go("Add<%-CLASSNAME%>");
 //            alert('next');
             };
@@ -208,7 +235,7 @@ function(oj, ko, $)
 
 
 
-                oj.Router.rootInstance.store({'page':"<%-CLASSNAME%>"});
+                //oj.Router.rootInstance.store({'page':"<%-CLASSNAME%>"});
                 oj.Router.rootInstance.go("Edit<%-CLASSNAME%>");
 //            alert('next');
             };
@@ -261,6 +288,64 @@ function(oj, ko, $)
 
 
       };
+
+
+<%if((mappedBy[CLASSNAME].oneByOne.length + mappedBy[CLASSNAME].oneByMany.length + mappedBy[CLASSNAME].manyByOne.length + mappedBy[CLASSNAME].manyByMany.length) !=0) {%>
+        self.saveButtonClick = function(){
+            var stack = oj.Router.rootInstance.retrieve();
+            var end = stack[stack.length-1];
+
+            var element = document.getElementById('table');
+            var currentRow = element.currentRow;
+
+            if(element.currentRow ==null) {
+            alert("Please select a row.");
+            } else {
+                var rowIndex = currentRow['rowIndex'];
+                var <%=CLASSNAME%> = vm.<%=CLASSNAME%>ObservableArray()[rowIndex];
+
+                end.<%=CLASSNAME%> = {
+
+                'id': <%=CLASSNAME%>.<%=CLASSNAME%>_Id,
+
+                <%for(var jj=0; jj<BASIC.length-1; jj++){%>
+                '<%=BASIC[jj]['$']['name']%>':<%=CLASSNAME%>.<%=CLASSNAME%>_<%=BASIC[jj]['$']['name']%>,
+                <%}%>
+                '<%=BASIC[jj]['$']['name']%>':<%=CLASSNAME%>.<%=CLASSNAME%>_<%=BASIC[jj]['$']['name']%>
+
+                };
+
+                stack[stack.length - 1] = end;
+                //alert(JSON.stringify(stack));
+                oj.Router.rootInstance.store(stack);
+                oj.Router.rootInstance.go(end.from);
+            }
+
+        };
+
+
+
+
+        self.backButtonClick = function(){
+            //var from = oj.Router.rootInstance.retrieve().from;
+            var stack = oj.Router.rootInstance.retrieve();
+            //alert(JSON.stringify(stack));
+            var end = stack[stack.length-1];
+            oj.Router.rootInstance.go(end.from);
+
+        };
+
+        self.isDisable = ko.observable(true);
+        self.notDisable = ko.computed(function(){
+            return !self.isDisable();
+        });
+
+        self.saveIsDisable = ko.observable(true);
+        self.saveNotDisable = ko.computed(function(){
+        return !self.saveIsDisable();
+        });
+<%}%>
+
 
 
 

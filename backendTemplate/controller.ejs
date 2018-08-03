@@ -56,8 +56,14 @@ public class <%-CLASSNAME%>Controller {
             old2.set<%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>In<%=CLASSNAME%>(null);
             <%=caseConvert.downFirst(CLASSNAME)%>Repository.save(old2);
         }
-            <%-caseConvert.downFirst(IdToEntity[ONETOONE[j]['$']['connected-entity-id']])%>Entity.set<%=CLASSNAME%>In<%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>(<%=caseConvert.downFirst(CLASSNAME)%>Entity);
+        <%-caseConvert.downFirst(IdToEntity[ONETOONE[j]['$']['connected-entity-id']])%>Entity.set<%=CLASSNAME%>In<%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>(<%=caseConvert.downFirst(CLASSNAME)%>Entity);
         <%_}-%>
+
+        List<<%-CLASSNAME%>> <%-caseConvert.downFirst(CLASSNAME)%>List=<%-caseConvert.downFirst(CLASSNAME)%>Repository.findBy<%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>In<%=CLASSNAME%>(<%-caseConvert.downFirst(IdToEntity[ONETOONE[j]['$']['connected-entity-id']])%>Entity);
+        for(<%-CLASSNAME%> entity:<%-caseConvert.downFirst(CLASSNAME)%>List){
+            entity.set<%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>In<%=CLASSNAME%>(null);
+            <%-caseConvert.downFirst(CLASSNAME)%>Repository.save(entity);
+        }
         <%-caseConvert.downFirst(IdToEntity[ONETOONE[j]['$']['connected-entity-id']])%>Repository.save(<%-caseConvert.downFirst(IdToEntity[ONETOONE[j]['$']['connected-entity-id']])%>Entity);
         <%=caseConvert.downFirst(CLASSNAME)%>Entity.set<%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>In<%=CLASSNAME%>(<%-caseConvert.downFirst(IdToEntity[ONETOONE[j]['$']['connected-entity-id']])%>Entity);
         <%=caseConvert.downFirst(CLASSNAME)%>Repository.save(<%=caseConvert.downFirst(CLASSNAME)%>Entity);
