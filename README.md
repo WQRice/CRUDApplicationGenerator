@@ -18,7 +18,7 @@ npm init
 ```
 - install it from our deploy branch 
 ```
-npm install https://WQRice@bitbucket.org/summerinterns2018/spring-ojet-generator.git#Deploy
+npm install https://github.com/WQRice/CRUDApplicationGenerator.git#Deploy
 ```
 
 - test installation/start program
