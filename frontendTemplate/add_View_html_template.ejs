@@ -346,7 +346,7 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
                           </span>
                         </div>
                         <div slot="body">
-                            <oj-table id="selectAttTable_multi" aria-label="Select Attribute Table"
+                            <oj-table id="<%-manyArray[j]%>selectAttTable_multi" aria-label="Select Attribute Table"
                                       data='[[<%-manyArray[j]%>_attArraydataprovider]]'
                                       selection-mode='{"row": "multiple"}'
                                       on-selection-changed = '[[selectionListener_multi]]'
