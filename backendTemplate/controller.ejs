@@ -43,7 +43,7 @@ public class <%-CLASSNAME%>Controller {
     //@CrossOrigin
     @PostMapping("/<%=CLASSNAME%>/{id1}/<%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>/{id2}")
     public ResponseEntity<?> associate<%=CLASSNAME%><%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>(@PathVariable(value="id1") Long id1, @PathVariable(value="id2") Long id2){
-        <%=CLASSNAME%> <%=caseConvert.downFirst(CLASSNAME)%>Entity=<%=caseConvert.downFirst(CLASSNAME)%>Repository.findById(id1).orElseThrow(()->new ResourceNotFoundException("<%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>","id",id1));
+        <%=CLASSNAME%> <%=caseConvert.downFirst(CLASSNAME)%>Entity=<%=caseConvert.downFirst(CLASSNAME)%>Repository.findById(id1).orElseThrow(()->new ResourceNotFoundException("<%-caseConvert.downFirst(CLASSNAME)%>","id",id1));
         <%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%> <%-caseConvert.downFirst(IdToEntity[ONETOONE[j]['$']['connected-entity-id']])%>Entity=<%-caseConvert.downFirst(IdToEntity[ONETOONE[j]['$']['connected-entity-id']])%>Repository.findById(id2).orElseThrow(()->new ResourceNotFoundException("<%-IdToEntity[ONETOONE[j]['$']['connected-entity-id']]%>","id",id2));
         <%_if(ONETOONE[j]['$']['connected-attribute-id']!=undefined){-%>
 
@@ -79,7 +79,7 @@ public class <%-CLASSNAME%>Controller {
     //@CrossOrigin
     @PostMapping("/<%=CLASSNAME%>/{id1}/<%-IdToEntity[ONETOMANY[j]['$']['connected-entity-id']]%>/{id2}")
     public ResponseEntity<?> associate<%=CLASSNAME%><%-IdToEntity[ONETOMANY[j]['$']['connected-entity-id']]%>(@PathVariable(value="id1") Long id1, @PathVariable(value="id2") Long id2){
-        <%=CLASSNAME%> <%=caseConvert.downFirst(CLASSNAME)%>Entity=<%=caseConvert.downFirst(CLASSNAME)%>Repository.findById(id1).orElseThrow(()->new ResourceNotFoundException("<%-IdToEntity[ONETOMANY[j]['$']['connected-entity-id']]%>","id",id1));
+        <%=CLASSNAME%> <%=caseConvert.downFirst(CLASSNAME)%>Entity=<%=caseConvert.downFirst(CLASSNAME)%>Repository.findById(id1).orElseThrow(()->new ResourceNotFoundException("<%-caseConvert.downFirst(CLASSNAME)%>","id",id1));
         <%-IdToEntity[ONETOMANY[j]['$']['connected-entity-id']]%> <%-caseConvert.downFirst(IdToEntity[ONETOMANY[j]['$']['connected-entity-id']])%>Entity=<%-caseConvert.downFirst(IdToEntity[ONETOMANY[j]['$']['connected-entity-id']])%>Repository.findById(id2).orElseThrow(()->new ResourceNotFoundException("<%-IdToEntity[ONETOMANY[j]['$']['connected-entity-id']]%>","id",id2));
         <%_if(ONETOMANY[j]['$']['connected-attribute-id']!=undefined){-%>
 
@@ -111,7 +111,7 @@ public class <%-CLASSNAME%>Controller {
     //@CrossOrigin
     @PostMapping("/<%=CLASSNAME%>/{id1}/<%-IdToEntity[MANYTOONE[j]['$']['connected-entity-id']]%>/{id2}")
     public ResponseEntity<?> associate<%=CLASSNAME%><%-IdToEntity[MANYTOONE[j]['$']['connected-entity-id']]%>(@PathVariable(value="id1") Long id1, @PathVariable(value="id2") Long id2){
-        <%=CLASSNAME%> <%=caseConvert.downFirst(CLASSNAME)%>Entity=<%=caseConvert.downFirst(CLASSNAME)%>Repository.findById(id1).orElseThrow(()->new ResourceNotFoundException("<%-IdToEntity[MANYTOONE[j]['$']['connected-entity-id']]%>","id",id1));
+        <%=CLASSNAME%> <%=caseConvert.downFirst(CLASSNAME)%>Entity=<%=caseConvert.downFirst(CLASSNAME)%>Repository.findById(id1).orElseThrow(()->new ResourceNotFoundException("<%-caseConvert.downFirst(CLASSNAME)%>","id",id1));
         <%-IdToEntity[MANYTOONE[j]['$']['connected-entity-id']]%> <%-caseConvert.downFirst(IdToEntity[MANYTOONE[j]['$']['connected-entity-id']])%>Entity=<%-caseConvert.downFirst(IdToEntity[MANYTOONE[j]['$']['connected-entity-id']])%>Repository.findById(id2).orElseThrow(()->new ResourceNotFoundException("<%-IdToEntity[MANYTOONE[j]['$']['connected-entity-id']]%>","id",id2));
         <%_if(MANYTOONE[j]['$']['connected-attribute-id']!=undefined){-%>
         if(<%=caseConvert.downFirst(CLASSNAME)%>Entity.get<%-IdToEntity[MANYTOONE[j]['$']['connected-entity-id']]%>In<%=CLASSNAME%>()!=null){
@@ -136,7 +136,7 @@ public class <%-CLASSNAME%>Controller {
     //@CrossOrigin
     @PostMapping("/<%=CLASSNAME%>/{id1}/<%-IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']]%>/{id2}")
     public ResponseEntity<?> associate<%=CLASSNAME%><%-IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']]%>(@PathVariable(value="id1") Long id1, @PathVariable(value="id2") Long id2){
-        <%=CLASSNAME%> <%=caseConvert.downFirst(CLASSNAME)%>Entity=<%=caseConvert.downFirst(CLASSNAME)%>Repository.findById(id1).orElseThrow(()->new ResourceNotFoundException("<%-IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']]%>","id",id1));
+        <%=CLASSNAME%> <%=caseConvert.downFirst(CLASSNAME)%>Entity=<%=caseConvert.downFirst(CLASSNAME)%>Repository.findById(id1).orElseThrow(()->new ResourceNotFoundException("<%-caseConvert.downFirst(CLASSNAME)%>","id",id1));
         <%-IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']]%> <%-caseConvert.downFirst(IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']])%>Entity=<%-caseConvert.downFirst(IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']])%>Repository.findById(id2).orElseThrow(()->new ResourceNotFoundException("<%-IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']]%>","id",id2));
         if(!<%=caseConvert.downFirst(CLASSNAME)%>Entity.get<%-IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']]%>In<%=CLASSNAME%>().contains(<%-caseConvert.downFirst(IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']])%>Entity))
             <%=caseConvert.downFirst(CLASSNAME)%>Entity.get<%-IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']]%>In<%=CLASSNAME%>().add(<%-caseConvert.downFirst(IdToEntity[MANYTOMANY[j]['$']['connected-entity-id']])%>Entity);
