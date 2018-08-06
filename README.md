@@ -25,6 +25,10 @@ npm init
 npm install https://WQRice@bitbucket.org/summerinterns2018/spring-ojet-generator.git#Deploy
 ```
 
+- test installation
+```
+yo rice-web-generator
+```
 ## Usage
 
 ## Instruction:
