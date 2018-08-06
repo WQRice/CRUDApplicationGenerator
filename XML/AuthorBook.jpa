@@ -82,6 +82,7 @@
         </jpa:nq>
     </jpa:entity>
     <jpa:entity compositePrimaryKeyClass="GenrePK" abs="false" class="Genre" v="true" xre="false" m="false" rootElement="_153299268602212" id="_153304163474231">
+        <jpa:annotation e="true" n="@repName(description)"/>
         <jpa:ath>st8li</jpa:ath>
         <jpa:attributes>
             <jpa:basic attribute-type="String" v="true" xvt="" name="code" uil="Code" id="_153304165007834">
