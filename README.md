@@ -5,7 +5,7 @@
 ## Dependency
 **1. Springboot 2.0.2.RELEASE**
 
-**4. nodeJs v8.11.2**
+**2. nodeJs v8.11.2**
 - ejs
 - npm install xml2js
 - npm install fs-extra
