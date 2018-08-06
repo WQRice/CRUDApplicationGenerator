@@ -3,9 +3,9 @@
 
 
 ## Dependency
-**1. Springboot 2**
+**1. Springboot 2.0.2.RELEASE**
 
-**4. nodeJs v8.11.2**
+**2. Node.js v8.11.2**
 - ejs
 - npm install xml2js
 - npm install fs-extra
@@ -18,7 +18,7 @@ npm init
 ```
 - install it from our deploy branch 
 ```
-npm install https://WQRice@bitbucket.org/summerinterns2018/spring-ojet-generator.git#Deploy
+npm install https://github.com/WQRice/CRUDApplicationGenerator.git#Deploy
 ```
 
 - test installation/start program
