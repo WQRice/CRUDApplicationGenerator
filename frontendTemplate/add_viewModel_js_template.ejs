@@ -771,16 +771,76 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
 
 
         self.addRow = function () {
-            // var Course = {
-            //     // 'Course_Id': self.inputCourseId(),
-            //
-            //     'Course_classroom': self.addCourseclassroom()
-            //   };
-            // var q = jQuery.Deferred(),
-            //     queuechain = q;
 
 
 
+            var urls = [];
+            for (var j in self.oneArray) {
+
+            var inputAttRef;
+            var array = [];
+
+            if (self.dropdownMap.hasOwnProperty(self.oneArray[j])) {
+                inputAttRef = self.attMap[self.oneArray[j]].dropInputAttData;
+
+                if (self[inputAttRef]() != null) {
+                    array.push({
+                    id: self[inputAttRef]()
+                    });
+                }
+            } else {
+                inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
+
+                if (self[inputAttRef]()[0] != null) {
+                array = self[inputAttRef]();
+                }
+            }
+
+                if (array.length > 0) {
+
+                var associationUrl =  "/" + self.oneArray[j] + "/" + array[0].id;
+                urls.push(associationUrl);
+                }
+            }
+
+
+            for (var j in self.manyArray) {
+                var inputAttRef = self.attMap[self.manyArray[j]].inputAttRef;
+                // alert(self[inputAttRef]().length);
+
+                // if (self[inputAttRef]().length > 0) {
+
+                for (var i = 0; i < self[inputAttRef]().length; i++) {
+                    var associationUrl = "/" + self.manyArray[j] + "/" + self[inputAttRef]()[i].id;
+                    urls.push(associationUrl);
+
+                }
+            // }
+            }
+
+
+            var container = function(id, count){
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + id  + urls[count],
+                        success: function () {
+                        //alert("connection success one");
+                            if(count==0){
+                            oj.Router.rootInstance.go("<%=myself.CLASSNAME%>");
+
+                            }else {
+                            count--;
+                            container(id, count);
+                            }
+
+                            },
+                        error: function (xhr) {
+                            console.log('error', xhr);
+                        // alert("connection failed");
+                        }
+                    }
+                );
+            };
 
             $.ajax({
                 type: "POST",
@@ -802,265 +862,61 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
                 dataType: "json"}
             ).done(
                 function (returndata) {
-                    var q = jQuery.Deferred(),
-                        queuechain = q;
+                   // var q = jQuery.Deferred(),
+                    //    queuechain = q;
 
-                    for (var j in self.oneArray) {
-                        (function(j) {
-
-                        var inputAttRef;
-                        var array = [];
-                        var attId;
-
-                        if(self.dropdownMap.hasOwnProperty(self.oneArray[j])){
-                            inputAttRef = self.attMap[self.oneArray[j]].dropInputAttData;
-                            if (self[inputAttRef]()!=null){
-                              array.push({
-                              id : self[inputAttRef]()
-                              });
-                            attId = "value";
-                              }
-                            } else {
-                              inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
-
-                                if(self[inputAttRef]()[0]!=null){
-                                array = self[inputAttRef]();
-                                }
-                            }
-
-                            if (array.length > 0) {
-
-                                var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + returndata.id + "/"+ self.oneArray[j]+ "/" + array[0].id;
-                               // alert(associationUrl);
-                                queuechain = queuechain.then( function () {
-                                    $.ajax({
-                                            type: "POST",
-                                            url: associationUrl,
-                                            success: function () {
-                                               // alert("connection success one");
-
-                                            },
-                                            error: function (xhr) {
-                                                console.log('error', xhr);
-                                               // alert("connection failed");
-                                            }
-                                        }
-                                    );
-                                }
-                            );
-
-                            }
+                   // for (var j in self.oneArray) {
+                   //     (function(j) {
+                    var count = urls.length-1;
+                    // var q = jQuery.Deferred(),
+                    //     queuechain = q;
+                    //
+                    // for (var j in self.oneArray) {
+                    //     (function(j) {
+                    //
+                    //     var inputAttRef;
+                    //     var array = [];
+                    //     var attId;
+                    //
+                    //     if(self.dropdownMap.hasOwnProperty(self.oneArray[j])){
+                    //         inputAttRef = self.attMap[self.oneArray[j]].dropInputAttData;
+                    //         if (self[inputAttRef]()!=null){
+                    //           array.push({
+                    //           id : self[inputAttRef]()
+                    //           });
+                    //         attId = "value";
+                    //           }
+                    //         } else {
+                    //           inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
+                    //
+                    //             if(self[inputAttRef]()[0]!=null){
+                    //             array = self[inputAttRef]();
+                    //             }
+                    //         }
+                    //
+                    //         if (array.length > 0) {
+                    //
+                    //             var associationUrl = "http://localhost:8080/api/Book/" + returndata.id + "/"+ self.oneArray[j]+ "/" + array[0].id;
+                    //            // alert(associationUrl);
+                    //             queuechain = queuechain.then( function () {
+                    if(count>=0) {
+                    container(returndata.id, count);
+                    } else {
+                        oj.Router.rootInstance.go("<%=myself.CLASSNAME%>");
                         }
-                        )(j);
+                    });
 
-
-                        //
-                            // queuechain1.done();
-                            // q1.resolve();
-                        }
-
-
-                    for (var j in self.manyArray) {
-                        var inputAttRef = self.attMap[self.manyArray[j]].inputAttRef;
-                       // alert(self[inputAttRef]().length);
-
-                        if (self[inputAttRef]().length > 0) {
-
-                            for (var i=0; i<self[inputAttRef]().length; i++)
-
-                            {
-
-                                (function (i) {
-
-                                    var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + returndata.id + "/" + self.manyArray[j] + "/" + self[inputAttRef]()[i].id;
-                                   // alert(associationUrl);
-                                    queuechain = queuechain.then(function () {
-                                            return $.ajax({
-                                                    type: "POST",
-                                                    url: associationUrl
-                                                    ,
-                                                    success: function () {
-                                                       // alert("connection success many" + associationUrl);
-
-                                                    },
-                                                    error: function (xhr) {
-                                                        console.log('error', xhr);
-                                                       // alert("connection failed");
-                                                    }
-                                                }
-                                            );
-                                        }
-                                    );
-                                }(i));
-
-                            }
-
-                        }
-
-                        //
-
-                    }
-
-
-                    queuechain.done();
-                    q.resolve();
-
-                    }).done(function() {
-                oj.Router.rootInstance.go("<%-myself.CLASSNAME%>");
-            });
-
-
-            // ready for adding attribute entities
-            // var attAssociationUrl = "http://localhost:8080/Course/" + self.inputCourseId() + "/" + self.attMap["Professor"].attInCourseName;
-            // var attUrl = "http://localhost:8080/Professor";
-            //
-            // queuechain.done( function() {
-            //     var q1 = jQuery.Deferred(),
-            //         queuechain1 = q1;
-            //
-            //
-            //
-            //     if (self.attMap["Professor"].oneOrMany == "one") {
-            //
-            //         if (self[inputAttRef]().length > 0) {
-            //
-            //
-            //
-            //            // alert(self.CourseObservableArray().length);
-            //             var associationUrl = "http://localhost:8080/api/Course/" + self.CourseObservableArray()[self.CourseObservableArray().length - 1]['Course_Id'] + "/Professor/" + self[inputAttRef]()[0].id;
-            //            // alert(associationUrl);
-            //             queuechain1 = queuechain1.then(
-            //                 $.ajax({
-            //                         type: "POST",
-            //                         url: associationUrl,
-            //                         success: function () {
-            //                            // alert("connection success");
-            //
-            //                         },
-            //                         error: function (xhr) {
-            //                             console.log('error', xhr);
-            //                            // alert("connection failed");
-            //                         }
-            //                     }
-            //                 ));
-            //
-            //             q1.resolve();
-            //         }
-            //
-            //         //
-            //         // queuechain1.done();
-            //         // q1.resolve();
-            //     }
-            // });
-
-            // $.ajax({
-            //     type: "GET",
-            //     url: attAssociationUrl
-            // }).done(
-            // if (output != null) {
-            // function (output) {
-            //    // alert("pass");
-            //     var q = jQuery.Deferred(),
-            //         queuechain = q;
-            //
-            //     queuechain = queuechain.then(
-            //         $.ajax({
-            //             url: "http://localhost:8080/Course/" + self.inputCourseId() + "/professorInCourse/",
-            //             type: "DELETE",
-            //             success: function (response) {
-            //                // alert("delete success");
-            //
-            //             },
-            //
-            //             error: function (e) {
-            //                 console.log(e);
-            //                // alert("delete failed");
-            //
-            //             }
-            //         }));
-            //
-            //     queuechain = queuechain.then(
-            //         $.ajax({
-            //             url: "http://localhost:8080/Professor/" + output.id + "/courseInProfessor/" + self.inputCourseId(),
-            //             type: "DELETE",
-            //             success: function (response) {
-            //                // alert("delete success");
-            //                 console.log(response);
-            //
-            //             },
-            //             error: function (e) {
-            //                 console.log(e);
-            //                // alert("delete failed");
-            //             }
-            //         })
-            //     );
-            //
-            //     queuechain.done(function () {
-            //             var q1 = jQuery.Deferred(),
-            //                 queuechain1 = q1;
-            //             if (self[inputAttRef]().length > 0) {
-            //
-            //                 var associationUrl = "http://localhost:8080/api/Course/" + self.inputCourseId() + "/Professor/" + self[inputAttRef]()[0].id;
-            //
-            //                // alert(associationUrl);
-            //                 queuechain1 = queuechain1.then($.ajax({
-            //                         type: "POST",
-            //                         url: associationUrl,
-            //                         success: function () {
-            //                            // alert("connection success");
-            //
-            //                         },
-            //                         error: function (xhr) {
-            //                             console.log('error', xhr);
-            //                            // alert("connection failed");
-            //                         }
-            //                     })
-            //                 );
-            //
-            //                 queuechain1.done();
-            //                 q1.resolve();
-            //             }
-            //         }
-            //     );
-            //
-            //     q.resolve();
-            //
-            // }
-            // ).fail(function () {
-            //     var q1 = jQuery.Deferred(),
-            //         queuechain1 = q1;
-            //
-            //     if (self[inputAttRef]().length > 0) {
-            //
-            //         var associationUrl = "http://localhost:8080/api/Course/" + self.inputCourseId() + "/Professor/" + self[inputAttRef]()[0].id;
-            //
-            //        // alert(associationUrl);
-            //         queuechain1 = queuechain1.then($.ajax({
-            //                 type: "POST",
-            //                 url: associationUrl,
-            //                 success: function () {
-            //                    // alert("connection success");
-            //
-            //                 },
-            //                 error: function (xhr) {
-            //                     console.log('error', xhr);
-            //                    // alert("connection failed");
-            //                 }
-            //             })
-            //         );
-            //
-            //         // var data = attUrl + "/" + self[inputAttRef]()[0].id;
-            //         // self.putRelation(attAssociationUrl, data);
-            //         // }
-            //     }
-            //     queuechain1.done();
-            //     q1.resolve();
-            //
-            // })
+        }
 
 
 
-        };
+
+
+
+
+
+
+
 
         self.backButtonClick=function(){
            // alert("hi, I going back to page: "+oj.Router.rootInstance.retrieve().page);
