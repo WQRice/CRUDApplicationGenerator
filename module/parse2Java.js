@@ -37,5 +37,9 @@ module.exports = function (datas,outputPath,modulePath) {
         var template = fs.readFileSync(modulePath+'/backendTemplate/repositoryAdapter.ejs', 'utf-8');
         var file = ejs.render(template, datas[0]);
         fs.outputFileSync(outputPath+"/src/main/java/OITWeb/" + datas[0].PACKAGENAME.replace(/\./g,'/') + "/repository/" + 'RepositoryAdapter.java', file, 'utf8');
+
+        var template = fs.readFileSync(modulePath+'/backendTemplate/settings.ejs', 'utf-8');
+        var file = ejs.render(template, datas[0]);
+        fs.outputFileSync(outputPath+ "/" + 'settings.gradle', file, 'utf8');
     }
 }

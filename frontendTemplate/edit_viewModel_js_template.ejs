@@ -85,7 +85,7 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojcheckboxset'
             if(self.attMap.hasOwnProperty(property)){
                 if(self.dropdownMap.hasOwnProperty(property)){
                     //alert("drop_ItemOrder"+property+"Array");
-                    self["drop_ItemOrder"+property+"Array"].removeAll();
+                    self["drop_<%=myself.CLASSNAME%>"+property+"Array"].removeAll();
                     self["get"+property]();
                 }
             }
@@ -173,7 +173,7 @@ self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>(rootViewModel.fro
 
                     });
                 } else {
-                var url = 'http://localhost:8080/ItemOrder/'+self.inputItemOrderId()+"/"+self.attMap[self.oneArray[i]].attInSelfName;
+                var url = 'http://localhost:8080/<%=myself.CLASSNAME%>/'+self.input<%=myself.CLASSNAME%>Id()+"/"+self.attMap[self.oneArray[i]].attInSelfName;
 
                 // alert(url);
                     self[self.attMap[self.oneArray[i]].dropInputAttData](null);
@@ -345,7 +345,7 @@ for (var i = 0; i < extractedData.length; i++) {
 
 var topush = {
 id: extractedData[i].id,
-label: self.repNameCalc("Customer", extractedData[i])
+label: self.repNameCalc("<%-oneArray[jj]%>", extractedData[i])
 
 };
 self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
@@ -360,25 +360,26 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
 
 <%}%>
 
-        self.attObservableArray = ko.observableArray();
+
+<%for (var i in oneArray) {%>
+self.<%-oneArray[i]%>_attObservableArray = ko.observableArray();
 
 
-        self.attArraydataprovider = new oj.ArrayTableDataSource(self.attObservableArray, {keyAttributes: 'id'});
+self.<%-oneArray[i]%>_attArraydataprovider = new oj.ArrayTableDataSource(self.<%-oneArray[i]%>_attObservableArray, {keyAttributes: 'id'});
 
 
-        self.selectAttColumnArray_single = ko.observable();
+self.<%-oneArray[i]%>_selectAttColumnArray_single = ko.observable();
+<%}%>
 
-        // self.selectAttColumnArray_single = [
-        //     {
-        //         "renderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_tmpl_single", true),
-        //         "headerRenderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_hdr_tmpl_single", true)
-        //     },
-        // {"headerText": "id", "field": "id", "headerStyle": 'font-weight:bold'},
-        //
-        // {"headerText": "firstName", "field": "firstName", "headerStyle": 'font-weight:bold'},
-        //
-        // {"headerText": "lastName", "field": "lastName", "headerStyle": 'font-weight:bold'}
-        // ];
+<%for (var i in manyArray) {%>
+self.<%-manyArray[i]%>_attObservableArray = ko.observableArray();
+
+
+self.<%-manyArray[i]%>_attArraydataprovider = new oj.ArrayTableDataSource(self.<%-manyArray[i]%>_attObservableArray, {keyAttributes: 'id'});
+self.<%-manyArray[i]%>_selectAttColumnArray_multi = ko.observable();
+<%}%>
+
+
 
 // for  many array (one to many or many to many)
 
@@ -434,7 +435,7 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
 
             self.curAtt(data.substring(4));
-            self.attObservableArray.removeAll();
+            self[self.curAtt()+"_attObservableArray"].removeAll();
 
 
             // self.selectAllDisabled(self.attMap[self.curAtt()].oneOrMany === "one");
@@ -447,18 +448,18 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                         var array = JSON.parse(JSON.stringify(self[self.attMap[self.curAtt()].inputColumnArray]));
 
                         array.unshift({
-                            "renderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_tmpl_single", true),
-                            "headerRenderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_hdr_tmpl_single", true)
+                            "renderer": oj.KnockoutTemplateUtils.getRenderer(self.curAtt()+"_checkbox_tmpl_single", true),
+                            "headerRenderer": oj.KnockoutTemplateUtils.getRenderer(self.curAtt()+"_checkbox_hdr_tmpl_single", true)
                         });
-                        self.selectAttColumnArray_single(array);
+                        self[self.curAtt()+"_selectAttColumnArray_single"](array);
                     } else {
                         var array = JSON.parse(JSON.stringify(self[self.attMap[self.curAtt()].inputColumnArray]));
 
                         array.unshift({
-                            "renderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_tmpl_multi", true),
-                            "headerRenderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_hdr_tmpl_multi", true)
+                            "renderer": oj.KnockoutTemplateUtils.getRenderer(self.curAtt()+"_checkbox_tmpl_multi", true),
+                            "headerRenderer": oj.KnockoutTemplateUtils.getRenderer(self.curAtt()+"_checkbox_hdr_tmpl_multi", true)
                         });
-                        self.selectAttColumnArray_multi(array);
+                        self[self.curAtt()+"_selectAttColumnArray_multi"](array);
 
                     }
                 });
@@ -466,8 +467,8 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                 return q.resolve(true);
             };
 
-            var selectAttTable = self.selectAllDisabled()? "selectAttTable_single" : "selectAttTable_multi";
-            var attSelectDialog = self.selectAllDisabled()? "#attSelectDialog_single" : "#attSelectDialog_multi";
+            var selectAttTable = self.selectAllDisabled()? self.curAtt()+"_selectAttTable_single" : self.curAtt()+"_selectAttTable_multi";
+            var attSelectDialog = self.selectAllDisabled()? "#"+self.curAtt()+"_attSelectDialog_single" : "#"+self.curAtt()+"_attSelectDialog_multi";
 
             callback().then(
             $.get('http://localhost:8080/'+self.curAtt(), function (data) {
@@ -501,15 +502,15 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                     // alert(JSON.stringify(self[inputAttRef]()));
                     if (self[inputAttRef]()!=null) {
                         for (var j = 0; j < self[inputAttRef]().length; j++) {
-                            if (self[inputAttRef]()[j].id == topush.id) {
+                            if (self[inputAttRef]()[j]!=undefined && self[inputAttRef]()[j].id == topush.id) {
                                 topush.Selected(["checked"]);
                             }
                         }
                     }
 
-                    self.attObservableArray.push(topush);
+                    self[self.curAtt() +"_attObservableArray"].push(topush);
                     // alert(JSON.stringify(self.attObservableArray()));
-                    self.attArraydataprovider = new oj.ArrayTableDataSource(self.attObservableArray, {keyAttributes: 'id'});
+                    //self.attArraydataprovider = new oj.ArrayTableDataSource(self.attObservableArray, {keyAttributes: 'id'});
 
                 }
 
@@ -519,9 +520,9 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
 
                 var selectionObj = [];
-                var totalSize = self.attArraydataprovider.totalSize();
+                var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                 for (var i = 0; i < totalSize; i++) {
-                    self.attArraydataprovider.at(i).then(function (row) {
+                    self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                         if (row.data.Selected().length > 0 &&
                             row.data.Selected()[0] == 'checked') {
                             selectionObj.push({startIndex: {row: row.index}, endIndex: {row: row.index}});
@@ -554,10 +555,10 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
             if (data != null) {
 
-                var totalSize = self.attArraydataprovider.totalSize();
+                var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                 for (var i = 0; i < totalSize; i++) {
-                    self.attArraydataprovider.at(i).then(function (row) {
-                        var oldObj = document.getElementById('selectAttTable_single').selection;
+                    self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
+                        var oldObj = document.getElementById(self.curAtt()+'_selectAttTable_single').selection;
                         //alert(JSON.stringify(oldObj));
 
                         for (var j=0; j<oldObj.length; j++) {
@@ -576,7 +577,7 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
 
                 for (var i = 0; i < totalSize; i++) {
-                    self.attArraydataprovider.at(i).then(function (row) {
+                    self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                         var foundInSelection = false;
                         if (selectionObj) {
                             // alert(JSON.stringify(selectionObj));
@@ -612,10 +613,10 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
             if (data != null) {
                 var selectionObj = data.value;
-                var totalSize = self.attArraydataprovider.totalSize();
+                var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                 var i, j;
                 for (i = 0; i < totalSize; i++) {
-                    self.attArraydataprovider.at(i).then(function (row) {
+                    self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                         var foundInSelection = false;
                         if (selectionObj) {
                             // alert(JSON.stringify(selectionObj));
@@ -651,10 +652,10 @@ self.input<%=manyArray[jj]%>ColumnArray = [
             var data = event.detail;
             if (data != null)
             {
-                var table = document.getElementById('selectAttTable_multi');
+                var table = document.getElementById(self.curAtt()+'_selectAttTable_multi');
                 if (data['value'].length > 0)
                 {
-                    var totalSize = self.attArraydataprovider.totalSize();
+                    var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                     table.selection = [{startIndex: {"row":0}, endIndex:{"row": totalSize - 1}}];
                 }
                 else
@@ -675,12 +676,12 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                 setTimeout(function () {
                     // sync the checkboxes with selection obj
                     var selectionObj = [];
-                    var totalSize = self.attArraydataprovider.totalSize();
+                    var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                     var i;
-                    var oldSelectionObj = document.getElementById('selectAttTable_single').selection;
+                    var oldSelectionObj = document.getElementById(self.curAtt()+'_selectAttTable_single').selection;
 
                     for (i = 0; i < totalSize; i++) {
-                        self.attArraydataprovider.at(i).then(function (row) {
+                        self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                             if (row.data.Selected().length > 0 &&
                                 row.data.Selected()[0] == 'checked') {
                                 if(oldSelectionObj!=null && oldSelectionObj.length>0 && oldSelectionObj[0].startIndex.row == row.index) {
@@ -691,7 +692,7 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                             }
 
                             if (row.index == totalSize - 1) {
-                                document.getElementById('selectAttTable_single').selection = selectionObj;
+                                document.getElementById(self.curAtt()+'_selectAttTable_single').selection = selectionObj;
                                 // alert("selectionobj after sync"+ JSON.stringify(selectionObj));
                             }
                         });
@@ -702,26 +703,26 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                 //alert("synccheckbox multi");
 
 
-                if (event.currentTarget.id != 'table_checkboxset_hdr_multi') {
+                if (event.currentTarget.id != self.curAtt()+'_table_checkboxset_hdr_multi') {
                     self._clearCheckboxHdr = true;
-                    $('#table_checkboxset_hdr_multi')[0].value = [];
+                    $('#'+self.curAtt()+'_table_checkboxset_hdr_multi')[0].value = [];
 
                     self._clearCheckboxHdr = false;
                 }
                 setTimeout(function () {
                     // sync the checkboxes with selection obj
                     var selectionObj = [];
-                    var totalSize = self.attArraydataprovider.totalSize();
+                    var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                     var i;
                     for (i = 0; i < totalSize; i++) {
-                        self.attArraydataprovider.at(i).then(function (row) {
+                        self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                             if (row.data.Selected().length > 0 &&
                                 row.data.Selected()[0] == 'checked') {
                                 selectionObj.push({startIndex: {row: row.index}, endIndex: {row: row.index}});
                             }
 
                             if (row.index == totalSize - 1) {
-                                document.getElementById('selectAttTable_multi').selection = selectionObj;
+                                document.getElementById(self.curAtt()+'_selectAttTable_multi').selection = selectionObj;
                                 // alert("selectionobj after sync"+ JSON.stringify(selectionObj));
                             }
                         });
@@ -730,11 +731,11 @@ self.input<%=manyArray[jj]%>ColumnArray = [
             }
         };
         self.clearAttributeSelect = function() {
-            var selectAttTable = self.selectAllDisabled()? "selectAttTable_single" : "selectAttTable_multi";
+            var selectAttTable = self.selectAllDisabled()? self.curAtt()+"_selectAttTable_single" : self.curAtt()+"_selectAttTable_multi";
 
-            var totalSize = self.attArraydataprovider.totalSize();
+            var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
             for (var i = 0; i < totalSize; i++) {
-                self.attArraydataprovider.at(i).then(function (row) {
+                self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                     var oldObj = document.getElementById(selectAttTable).selection;
 
                     for (var j=0; j<oldObj.length; j++) {
@@ -750,7 +751,7 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
             if(!self.selectAllDisabled()) {
                 self._clearCheckboxHdr = true;
-                $('#table_checkboxset_hdr_multi')[0].value = [];
+                $('#'+self.curAtt()+'_table_checkboxset_hdr_multi')[0].value = [];
 
                 self._clearCheckboxHdr = false;
             }
@@ -770,8 +771,8 @@ self.input<%=manyArray[jj]%>ColumnArray = [
             // get selected id of associated attributes
             // var element = document.getElementById('selectAttTable');
             // var currentRow = element.currentRow;
-            var selectAttTable = self.selectAllDisabled()? "selectAttTable_single" : "selectAttTable_multi";
-            var attSelectDialog = self.selectAllDisabled()? "#attSelectDialog_single" : "#attSelectDialog_multi";
+    var selectAttTable = self.selectAllDisabled()? self.curAtt()+"_selectAttTable_single" : self.curAtt()+"_selectAttTable_multi";
+    var attSelectDialog = self.selectAllDisabled()? "#"+self.curAtt()+"_attSelectDialog_single" : "#"+self.curAtt()+"_attSelectDialog_multi";
 
             var selection = document.getElementById(selectAttTable).selection;
 
@@ -782,7 +783,7 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                 for (var i=0; i< selection.length; i++) {
 
                     var rowIndex = selection[i].startIndex.row;
-                    var selected = self.attObservableArray()[rowIndex];
+                    var selected = self[self.curAtt()+"_attObservableArray"]()[rowIndex];
                     // alert(JSON.stringify(self.attObservableArray()));
                     self[self.attMap[self.curAtt()].inputAttRef].push(selected);
                     // alert(JSON.stringify(self.inputCourseProfessorArray()));
@@ -881,6 +882,8 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
 
             for (var j in self.manyArray) {
+            (function(j) {
+
 
                 var inputAttRefMany = self.attMap[self.manyArray[j]].inputAttRef;
 
@@ -1031,6 +1034,7 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                 //         }
                 //     });
 
+                })(j)
 
                 }
 
@@ -1042,6 +1046,7 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
 
             for (var j in self.oneArray) {
+            (function(j) {
 
                 var inputAttRef;
                 var array = [];
@@ -1187,6 +1192,8 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                 //         alert("connection success");
                 //
                 //     },
+            })(j)
+
 
 
             }

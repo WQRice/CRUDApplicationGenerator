@@ -89,6 +89,9 @@ function(oj, ko, $)
             alert(JSON.stringify(oj.Router.rootInstance.retrieve()));
 
         }
+        else {
+        self.isDisable(true);
+        }
 <%}%>
 
       self.<%=CLASSNAME%>ObservableArray.removeAll();

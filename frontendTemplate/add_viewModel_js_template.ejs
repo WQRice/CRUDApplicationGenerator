@@ -82,7 +82,7 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojcheckboxset'
                if(self.attMap.hasOwnProperty(property)){
                    if(self.dropdownMap.hasOwnProperty(property)){
                        //alert("drop_ItemOrder"+property+"Array");
-                       self["drop_ItemOrder"+property+"Array"].removeAll();
+                       self["drop_<%=myself.CLASSNAME%>"+property+"Array"].removeAll();
                        self["get"+property]();
                    }
                }
@@ -305,14 +305,23 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
 
 
 
-
-        self.attObservableArray = ko.observableArray();
-
-
-        self.attArraydataprovider = new oj.ArrayTableDataSource(self.attObservableArray, {keyAttributes: 'id'});
+    <%for (var i in oneArray) {%>
+        self.<%-oneArray[i]%>_attObservableArray = ko.observableArray();
 
 
-        self.selectAttColumnArray_single = ko.observable();
+        self.<%-oneArray[i]%>_attArraydataprovider = new oj.ArrayTableDataSource(self.<%-oneArray[i]%>_attObservableArray, {keyAttributes: 'id'});
+
+
+        self.<%-oneArray[i]%>_selectAttColumnArray_single = ko.observable();
+    <%}%>
+
+    <%for (var i in manyArray) {%>
+        self.<%-manyArray[i]%>_attObservableArray = ko.observableArray();
+
+
+        self.<%-manyArray[i]%>_attArraydataprovider = new oj.ArrayTableDataSource(self.<%-manyArray[i]%>_attObservableArray, {keyAttributes: 'id'});
+        self.<%-manyArray[i]%>_selectAttColumnArray_multi = ko.observable();
+    <%}%>
 
 
 // for  many array (one to many or many to many)
@@ -360,7 +369,7 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
             // self.selectAllDisabled(self.attMap[self.curAtt()].oneOrMany === "one");
             // self.selectAllDisabled(true);
 
-            self.attObservableArray.removeAll();
+            self[self.curAtt()+"_attObservableArray"].removeAll();
 
             var callback = function() {
                 var q = jQuery.Deferred(), queue = q;
@@ -372,14 +381,13 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
                         queue = queue.then(function () {
 
                         array0.unshift({
-                            "renderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_tmpl_single", true),
-                            "headerRenderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_hdr_tmpl_single", true)
+                            "renderer": oj.KnockoutTemplateUtils.getRenderer(self.curAtt()+"_checkbox_tmpl_single", true),
+                            "headerRenderer": oj.KnockoutTemplateUtils.getRenderer(self.curAtt()+"_checkbox_hdr_tmpl_single", true)
                         });
                         });
 
                         queue.done(function() {
-                        self.selectAttColumnArray_single(array0);
-                        alert(JSON.stringify(self.selectAttColumnArray_single()));
+                        self[self.curAtt()+"_selectAttColumnArray_single"](array0);
                         }
                         );
                         return q.resolve(true);
@@ -388,12 +396,12 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
                         queue = queue.then(function () {
 
                         array.unshift({
-                            "renderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_tmpl_multi", true),
-                            "headerRenderer": oj.KnockoutTemplateUtils.getRenderer("checkbox_hdr_tmpl_multi", true)
+                            "renderer": oj.KnockoutTemplateUtils.getRenderer(self.curAtt()+"_checkbox_tmpl_multi", true),
+                            "headerRenderer": oj.KnockoutTemplateUtils.getRenderer(self.curAtt()+"_checkbox_hdr_tmpl_multi", true)
                         });
                         });
                         queue.done(function() {
-                        self.selectAttColumnArray_multi(array);
+                        self[self.curAtt()+"_selectAttColumnArray_multi"](array);
                         }
                         );
                         return q.resolve(true);
@@ -401,8 +409,8 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
             };
 
 
-            var selectAttTable = self.selectAllDisabled()? "selectAttTable_single" : "selectAttTable_multi";
-            var attSelectDialog = self.selectAllDisabled()? "#attSelectDialog_single" : "#attSelectDialog_multi";
+            var selectAttTable = self.selectAllDisabled()? self.curAtt()+"_selectAttTable_single" : self.curAtt()+"_selectAttTable_multi";
+            var attSelectDialog = self.selectAllDisabled()? "#"+self.curAtt()+"_attSelectDialog_single" : "#"+self.curAtt()+"_attSelectDialog_multi";
 
 
             callback().then(
@@ -435,22 +443,21 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
                     //// alert(JSON.stringify(self[inputAttRef]()));
                     if (self[inputAttRef]()!=null) {
                         for (var j = 0; j < self[inputAttRef]().length; j++) {
-                            if (self[inputAttRef]()[j].id == topush.id) {
+                            if (self[inputAttRef]()[j]!=undefined && self[inputAttRef]()[j].id == topush.id) {
                                 topush.Selected(["checked"]);
                             }
                         }
                     }
 
-                    self.attObservableArray.push(topush);
+                    self[self.curAtt() +"_attObservableArray"].push(topush);
                     //// alert(JSON.stringify(self.attObservableArray()));
-                    self.attArraydataprovider = new oj.ArrayTableDataSource(self.attObservableArray, {keyAttributes: 'id'});
 
                 }
 
                 var selectionObj = [];
-                var totalSize = self.attArraydataprovider.totalSize();
+                var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                 for (var i = 0; i < totalSize; i++) {
-                    self.attArraydataprovider.at(i).then(function (row) {
+                    self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                         if (row.data.Selected().length > 0 &&
                             row.data.Selected()[0] == 'checked') {
                             selectionObj.push({startIndex: {row: row.index}, endIndex: {row: row.index}});
@@ -465,7 +472,7 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
             })
             ).done(function() {
                 document.querySelector(attSelectDialog).open();
-                document.getElementById('selectAttTable_single').selection =[];
+                //document.getElementById('selectAttTable_single').selection =[];
             });
 
 
@@ -483,10 +490,10 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
 
             if (data != null) {
 
-                var totalSize = self.attArraydataprovider.totalSize();
+                var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                 for (var i = 0; i < totalSize; i++) {
-                    self.attArraydataprovider.at(i).then(function (row) {
-                        var oldObj = document.getElementById('selectAttTable_single').selection;
+                    self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
+                        var oldObj = document.getElementById(self.curAtt()+'_selectAttTable_single').selection;
                        // alert(oldObj);
 
                         for (var j=0; j<oldObj.length; j++) {
@@ -505,7 +512,7 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
 
 
                 for (var i = 0; i < totalSize; i++) {
-                    self.attArraydataprovider.at(i).then(function (row) {
+                    self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                         var foundInSelection = false;
                         if (selectionObj) {
                             //// alert(JSON.stringify(selectionObj));
@@ -541,10 +548,10 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
 
             if (data != null) {
                 var selectionObj = data.value;
-                var totalSize = self.attArraydataprovider.totalSize();
+                var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                 var i, j;
                 for (i = 0; i < totalSize; i++) {
-                    self.attArraydataprovider.at(i).then(function (row) {
+                    self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                         var foundInSelection = false;
                         if (selectionObj) {
                             //// alert(JSON.stringify(selectionObj));
@@ -580,10 +587,10 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
             var data = event.detail;
             if (data != null)
             {
-                var table = document.getElementById('selectAttTable_multi');
+                var table = document.getElementById(self.curAtt()+"_selectAttTable_multi");
                 if (data['value'].length > 0)
                 {
-                    var totalSize = self.attArraydataprovider.totalSize();
+                    var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                     table.selection = [{startIndex: {"row":0}, endIndex:{"row": totalSize - 1}}];
                 }
                 else
@@ -603,12 +610,12 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
                 setTimeout(function () {
                     // sync the checkboxes with selection obj
                     var selectionObj = [];
-                    var totalSize = self.attArraydataprovider.totalSize();
+                    var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                     var i;
-                    var oldSelectionObj = document.getElementById('selectAttTable_single').selection;
+                    var oldSelectionObj = document.getElementById(self.curAtt()+'_selectAttTable_single').selection;
 
                     for (i = 0; i < totalSize; i++) {
-                        self.attArraydataprovider.at(i).then(function (row) {
+                        self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                             if (row.data.Selected().length > 0 &&
                                 row.data.Selected()[0] == 'checked') {
                                 if(oldSelectionObj!=null && oldSelectionObj.length>0 && oldSelectionObj[0].startIndex.row == row.index) {
@@ -619,7 +626,7 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
                             }
 
                             if (row.index == totalSize - 1) {
-                                document.getElementById('selectAttTable_single').selection = selectionObj;
+                                document.getElementById(self.curAtt()+'_selectAttTable_single').selection = selectionObj;
                                 //// alert("selectionobj after sync"+ JSON.stringify(selectionObj));
                             }
                         });
@@ -628,26 +635,26 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
 
             } else {
 
-                if (event.currentTarget.id != 'table_checkboxset_hdr_multi') {
+                if (event.currentTarget.id != self.curAtt()+'_table_checkboxset_hdr_multi') {
                     self._clearCheckboxHdr = true;
-                    $('#table_checkboxset_hdr_multi')[0].value = [];
+                    $('#'+self.curAtt()+'_table_checkboxset_hdr_multi')[0].value = [];
 
                     self._clearCheckboxHdr = false;
                 }
                 setTimeout(function () {
                     // sync the checkboxes with selection obj
                     var selectionObj = [];
-                    var totalSize = self.attArraydataprovider.totalSize();
+                    var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
                     var i;
                     for (i = 0; i < totalSize; i++) {
-                        self.attArraydataprovider.at(i).then(function (row) {
+                        self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                             if (row.data.Selected().length > 0 &&
                                 row.data.Selected()[0] == 'checked') {
                                 selectionObj.push({startIndex: {row: row.index}, endIndex: {row: row.index}});
                             }
 
                             if (row.index == totalSize - 1) {
-                                document.getElementById('selectAttTable_multi').selection = selectionObj;
+                                document.getElementById(self.curAtt()+'_selectAttTable_multi').selection = selectionObj;
                                 //// alert("selectionobj after sync"+ JSON.stringify(selectionObj));
                             }
                         });
@@ -656,11 +663,11 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
             }
         };
         self.clearAttributeSelect = function() {
-            var selectAttTable = self.selectAllDisabled()? "selectAttTable_single" : "selectAttTable_multi";
+            var selectAttTable = self.selectAllDisabled()? self.curAtt()+"_selectAttTable_single" : self.curAtt()+"_selectAttTable_multi";
 
-            var totalSize = self.attArraydataprovider.totalSize();
+            var totalSize = self[self.curAtt()+"_attArraydataprovider"].totalSize();
             for (var i = 0; i < totalSize; i++) {
-                self.attArraydataprovider.at(i).then(function (row) {
+                self[self.curAtt()+"_attArraydataprovider"].at(i).then(function (row) {
                     var oldObj = document.getElementById(selectAttTable).selection;
 
                     for (var j=0; j<oldObj.length; j++) {
@@ -675,7 +682,7 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
             document.getElementById(selectAttTable).selection=[];
             if(!self.selectAllDisabled()) {
                 self._clearCheckboxHdr = true;
-                $('#table_checkboxset_hdr_multi')[0].value = [];
+                $('#'+self.curAtt()+'_table_checkboxset_hdr_multi')[0].value = [];
 
                 self._clearCheckboxHdr = false;
             }
@@ -685,7 +692,6 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
         self.closeAttributeSelect = function () {
 
 
-            // // get current id of record being updated on current page
             //
             // var main_element = document.getElementById('table');
             // var main_currentRow = main_element.currentRow;
@@ -696,8 +702,8 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
             // get selected id of associated attributes
             // var element = document.getElementById('selectAttTable');
             // var currentRow = element.currentRow;
-            var selectAttTable = self.selectAllDisabled()? "selectAttTable_single" : "selectAttTable_multi";
-            var attSelectDialog = self.selectAllDisabled()? "#attSelectDialog_single" : "#attSelectDialog_multi";
+            var selectAttTable = self.selectAllDisabled()? self.curAtt()+"_selectAttTable_single" : self.curAtt()+"_selectAttTable_multi";
+            var attSelectDialog = self.selectAllDisabled()? "#"+self.curAtt()+"_attSelectDialog_single" : "#"+self.curAtt()+"_attSelectDialog_multi";
 
             var selection = document.getElementById(selectAttTable).selection;
 
@@ -708,7 +714,7 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
                 for (var i=0; i< selection.length; i++) {
 
                     var rowIndex = selection[i].startIndex.row;
-                    var selected = self.attObservableArray()[rowIndex];
+                    var selected = self[self.curAtt()+"_attObservableArray"]()[rowIndex];
                     //// alert(JSON.stringify(self.attObservableArray()));
                     self[self.attMap[self.curAtt()].inputAttRef].push(selected);
 
@@ -765,16 +771,76 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
 
 
         self.addRow = function () {
-            // var Course = {
-            //     // 'Course_Id': self.inputCourseId(),
-            //
-            //     'Course_classroom': self.addCourseclassroom()
-            //   };
-            // var q = jQuery.Deferred(),
-            //     queuechain = q;
 
 
 
+            var urls = [];
+            for (var j in self.oneArray) {
+
+            var inputAttRef;
+            var array = [];
+
+            if (self.dropdownMap.hasOwnProperty(self.oneArray[j])) {
+                inputAttRef = self.attMap[self.oneArray[j]].dropInputAttData;
+
+                if (self[inputAttRef]() != null) {
+                    array.push({
+                    id: self[inputAttRef]()
+                    });
+                }
+            } else {
+                inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
+
+                if (self[inputAttRef]()[0] != null) {
+                array = self[inputAttRef]();
+                }
+            }
+
+                if (array.length > 0) {
+
+                var associationUrl =  "/" + self.oneArray[j] + "/" + array[0].id;
+                urls.push(associationUrl);
+                }
+            }
+
+
+            for (var j in self.manyArray) {
+                var inputAttRef = self.attMap[self.manyArray[j]].inputAttRef;
+                // alert(self[inputAttRef]().length);
+
+                // if (self[inputAttRef]().length > 0) {
+
+                for (var i = 0; i < self[inputAttRef]().length; i++) {
+                    var associationUrl = "/" + self.manyArray[j] + "/" + self[inputAttRef]()[i].id;
+                    urls.push(associationUrl);
+
+                }
+            // }
+            }
+
+
+            var container = function(id, count){
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + id  + urls[count],
+                        success: function () {
+                        //alert("connection success one");
+                            if(count==0){
+                            oj.Router.rootInstance.go("<%=myself.CLASSNAME%>");
+
+                            }else {
+                            count--;
+                            container(id, count);
+                            }
+
+                            },
+                        error: function (xhr) {
+                            console.log('error', xhr);
+                        // alert("connection failed");
+                        }
+                    }
+                );
+            };
 
             $.ajax({
                 type: "POST",
@@ -796,260 +862,61 @@ self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
                 dataType: "json"}
             ).done(
                 function (returndata) {
-                    var q = jQuery.Deferred(),
-                        queuechain = q;
+                   // var q = jQuery.Deferred(),
+                    //    queuechain = q;
 
-                    for (var j in self.oneArray) {
-                        var inputAttRef;
-                        var array = [];
-                        var attId;
-
-                        if(self.dropdownMap.hasOwnProperty(self.oneArray[j])){
-                            inputAttRef = self.attMap[self.oneArray[j]].dropInputAttData;
-                            if (self[inputAttRef]()!=null){
-                              array.push({
-                              id : self[inputAttRef]()
-                              });
-                            attId = "value";
-                              }
-                            } else {
-                              inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
-
-                                if(self[inputAttRef]()[0]!=null){
-                                array = self[inputAttRef]();
-                                }
-                            }
-
-                            if (array.length > 0) {
-
-                                var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + returndata.id + "/"+ self.oneArray[j]+ "/" + array[0].id;
-                               // alert(associationUrl);
-                                queuechain = queuechain.then( function () {
-                                    $.ajax({
-                                            type: "POST",
-                                            url: associationUrl,
-                                            success: function () {
-                                               // alert("connection success one");
-
-                                            },
-                                            error: function (xhr) {
-                                                console.log('error', xhr);
-                                               // alert("connection failed");
-                                            }
-                                        }
-                                    );
-                                }
-                            );
-
-                            }
-
-                            //
-                            // queuechain1.done();
-                            // q1.resolve();
+                   // for (var j in self.oneArray) {
+                   //     (function(j) {
+                    var count = urls.length-1;
+                    // var q = jQuery.Deferred(),
+                    //     queuechain = q;
+                    //
+                    // for (var j in self.oneArray) {
+                    //     (function(j) {
+                    //
+                    //     var inputAttRef;
+                    //     var array = [];
+                    //     var attId;
+                    //
+                    //     if(self.dropdownMap.hasOwnProperty(self.oneArray[j])){
+                    //         inputAttRef = self.attMap[self.oneArray[j]].dropInputAttData;
+                    //         if (self[inputAttRef]()!=null){
+                    //           array.push({
+                    //           id : self[inputAttRef]()
+                    //           });
+                    //         attId = "value";
+                    //           }
+                    //         } else {
+                    //           inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
+                    //
+                    //             if(self[inputAttRef]()[0]!=null){
+                    //             array = self[inputAttRef]();
+                    //             }
+                    //         }
+                    //
+                    //         if (array.length > 0) {
+                    //
+                    //             var associationUrl = "http://localhost:8080/api/Book/" + returndata.id + "/"+ self.oneArray[j]+ "/" + array[0].id;
+                    //            // alert(associationUrl);
+                    //             queuechain = queuechain.then( function () {
+                    if(count>=0) {
+                    container(returndata.id, count);
+                    } else {
+                        oj.Router.rootInstance.go("<%=myself.CLASSNAME%>");
                         }
+                    });
 
-
-                    for (var j in self.manyArray) {
-                        var inputAttRef = self.attMap[self.manyArray[j]].inputAttRef;
-                       // alert(self[inputAttRef]().length);
-
-                        if (self[inputAttRef]().length > 0) {
-
-                            for (var i=0; i<self[inputAttRef]().length; i++)
-
-                            {
-
-                                (function (i) {
-
-                                    var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + returndata.id + "/" + self.manyArray[j] + "/" + self[inputAttRef]()[i].id;
-                                   // alert(associationUrl);
-                                    queuechain = queuechain.then(function () {
-                                            return $.ajax({
-                                                    type: "POST",
-                                                    url: associationUrl
-                                                    ,
-                                                    success: function () {
-                                                       // alert("connection success many" + associationUrl);
-
-                                                    },
-                                                    error: function (xhr) {
-                                                        console.log('error', xhr);
-                                                       // alert("connection failed");
-                                                    }
-                                                }
-                                            );
-                                        }
-                                    );
-                                }(i));
-
-                            }
-
-                        }
-
-                        //
-
-                    }
-
-
-                    queuechain.done();
-                    q.resolve();
-
-                    }).done(function() {
-                oj.Router.rootInstance.go("<%-myself.CLASSNAME%>");
-            });
-
-
-            // ready for adding attribute entities
-            // var attAssociationUrl = "http://localhost:8080/Course/" + self.inputCourseId() + "/" + self.attMap["Professor"].attInCourseName;
-            // var attUrl = "http://localhost:8080/Professor";
-            //
-            // queuechain.done( function() {
-            //     var q1 = jQuery.Deferred(),
-            //         queuechain1 = q1;
-            //
-            //
-            //
-            //     if (self.attMap["Professor"].oneOrMany == "one") {
-            //
-            //         if (self[inputAttRef]().length > 0) {
-            //
-            //
-            //
-            //            // alert(self.CourseObservableArray().length);
-            //             var associationUrl = "http://localhost:8080/api/Course/" + self.CourseObservableArray()[self.CourseObservableArray().length - 1]['Course_Id'] + "/Professor/" + self[inputAttRef]()[0].id;
-            //            // alert(associationUrl);
-            //             queuechain1 = queuechain1.then(
-            //                 $.ajax({
-            //                         type: "POST",
-            //                         url: associationUrl,
-            //                         success: function () {
-            //                            // alert("connection success");
-            //
-            //                         },
-            //                         error: function (xhr) {
-            //                             console.log('error', xhr);
-            //                            // alert("connection failed");
-            //                         }
-            //                     }
-            //                 ));
-            //
-            //             q1.resolve();
-            //         }
-            //
-            //         //
-            //         // queuechain1.done();
-            //         // q1.resolve();
-            //     }
-            // });
-
-            // $.ajax({
-            //     type: "GET",
-            //     url: attAssociationUrl
-            // }).done(
-            // if (output != null) {
-            // function (output) {
-            //    // alert("pass");
-            //     var q = jQuery.Deferred(),
-            //         queuechain = q;
-            //
-            //     queuechain = queuechain.then(
-            //         $.ajax({
-            //             url: "http://localhost:8080/Course/" + self.inputCourseId() + "/professorInCourse/",
-            //             type: "DELETE",
-            //             success: function (response) {
-            //                // alert("delete success");
-            //
-            //             },
-            //
-            //             error: function (e) {
-            //                 console.log(e);
-            //                // alert("delete failed");
-            //
-            //             }
-            //         }));
-            //
-            //     queuechain = queuechain.then(
-            //         $.ajax({
-            //             url: "http://localhost:8080/Professor/" + output.id + "/courseInProfessor/" + self.inputCourseId(),
-            //             type: "DELETE",
-            //             success: function (response) {
-            //                // alert("delete success");
-            //                 console.log(response);
-            //
-            //             },
-            //             error: function (e) {
-            //                 console.log(e);
-            //                // alert("delete failed");
-            //             }
-            //         })
-            //     );
-            //
-            //     queuechain.done(function () {
-            //             var q1 = jQuery.Deferred(),
-            //                 queuechain1 = q1;
-            //             if (self[inputAttRef]().length > 0) {
-            //
-            //                 var associationUrl = "http://localhost:8080/api/Course/" + self.inputCourseId() + "/Professor/" + self[inputAttRef]()[0].id;
-            //
-            //                // alert(associationUrl);
-            //                 queuechain1 = queuechain1.then($.ajax({
-            //                         type: "POST",
-            //                         url: associationUrl,
-            //                         success: function () {
-            //                            // alert("connection success");
-            //
-            //                         },
-            //                         error: function (xhr) {
-            //                             console.log('error', xhr);
-            //                            // alert("connection failed");
-            //                         }
-            //                     })
-            //                 );
-            //
-            //                 queuechain1.done();
-            //                 q1.resolve();
-            //             }
-            //         }
-            //     );
-            //
-            //     q.resolve();
-            //
-            // }
-            // ).fail(function () {
-            //     var q1 = jQuery.Deferred(),
-            //         queuechain1 = q1;
-            //
-            //     if (self[inputAttRef]().length > 0) {
-            //
-            //         var associationUrl = "http://localhost:8080/api/Course/" + self.inputCourseId() + "/Professor/" + self[inputAttRef]()[0].id;
-            //
-            //        // alert(associationUrl);
-            //         queuechain1 = queuechain1.then($.ajax({
-            //                 type: "POST",
-            //                 url: associationUrl,
-            //                 success: function () {
-            //                    // alert("connection success");
-            //
-            //                 },
-            //                 error: function (xhr) {
-            //                     console.log('error', xhr);
-            //                    // alert("connection failed");
-            //                 }
-            //             })
-            //         );
-            //
-            //         // var data = attUrl + "/" + self[inputAttRef]()[0].id;
-            //         // self.putRelation(attAssociationUrl, data);
-            //         // }
-            //     }
-            //     queuechain1.done();
-            //     q1.resolve();
-            //
-            // })
+        }
 
 
 
-        };
+
+
+
+
+
+
+
 
         self.backButtonClick=function(){
            // alert("hi, I going back to page: "+oj.Router.rootInstance.retrieve().page);
