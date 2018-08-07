@@ -23,7 +23,7 @@
                 <jpa:xm/>
             </jpa:basic>
             <jpa:many-to-one primaryKey="false" connected-entity-id="_153304158229825" connected-attribute-id="_153304607773354" v="true" name="author" id="_153304607773253"/>
-            <jpa:one-to-one own="true" primaryKey="false" connected-entity-id="_153304163474231" v="true" name="genre" id="_153304192710142"/>
+            <jpa:many-to-one primaryKey="false" connected-entity-id="_153304163474231" v="true" name="genre" id="_153365075691513"/>
             <jpa:id attribute-type="Long" v="true" xvt="" name="id" id="_153299269077615">
                 <jpa:xwm/>
                 <jpa:xm/>
@@ -47,6 +47,7 @@
         </jpa:nq>
     </jpa:entity>
     <jpa:entity compositePrimaryKeyClass="AuthorPK" abs="false" class="Author" v="true" xre="false" m="false" rootElement="_153299268602212" id="_153304158229825">
+        <jpa:annotation e="true" n="@repName(firstName,lastName)"/>
         <jpa:ath>st8li</jpa:ath>
         <jpa:attributes>
             <jpa:basic attribute-type="String" v="true" xvt="" name="firstName" uil="First Name" id="_153304159370428">
@@ -125,7 +126,7 @@
     </jpa:c>
     <jpa:wsl>
         <jpa:ws n="Main" id="_153299268602213">
-            <i ref="_153304163474231" x="711" y="274"/>
+            <i ref="_153304163474231" x="711" y="265"/>
             <i ref="_153299269076714" x="418" y="252"/>
             <i ref="_153304158229825" x="150" y="239"/>
         </jpa:ws>
