@@ -85,7 +85,7 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojcheckboxset'
             if(self.attMap.hasOwnProperty(property)){
                 if(self.dropdownMap.hasOwnProperty(property)){
                     //alert("drop_ItemOrder"+property+"Array");
-                    self["drop_ItemOrder"+property+"Array"].removeAll();
+                    self["drop_<%=myself.CLASSNAME%>"+property+"Array"].removeAll();
                     self["get"+property]();
                 }
             }
@@ -173,7 +173,7 @@ self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>(rootViewModel.fro
 
                     });
                 } else {
-                var url = 'http://localhost:8080/ItemOrder/'+self.inputItemOrderId()+"/"+self.attMap[self.oneArray[i]].attInSelfName;
+                var url = 'http://localhost:8080/<%=myself.CLASSNAME%>/'+self.input<%=myself.CLASSNAME%>Id()+"/"+self.attMap[self.oneArray[i]].attInSelfName;
 
                 // alert(url);
                     self[self.attMap[self.oneArray[i]].dropInputAttData](null);
@@ -345,7 +345,7 @@ for (var i = 0; i < extractedData.length; i++) {
 
 var topush = {
 id: extractedData[i].id,
-label: self.repNameCalc("Customer", extractedData[i])
+label: self.repNameCalc("<%-oneArray[jj]%>", extractedData[i])
 
 };
 self.drop_<%=myself.CLASSNAME+oneArray[jj]%>Array.push(topush);
