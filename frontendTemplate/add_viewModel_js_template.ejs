@@ -82,7 +82,7 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojcheckboxset'
                if(self.attMap.hasOwnProperty(property)){
                    if(self.dropdownMap.hasOwnProperty(property)){
                        //alert("drop_ItemOrder"+property+"Array");
-                       self["drop_ItemOrder"+property+"Array"].removeAll();
+                       self["drop_<%=myself.CLASSNAME%>"+property+"Array"].removeAll();
                        self["get"+property]();
                    }
                }

@@ -882,6 +882,8 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
 
             for (var j in self.manyArray) {
+            (function(j) {
+
 
                 var inputAttRefMany = self.attMap[self.manyArray[j]].inputAttRef;
 
@@ -1032,6 +1034,7 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                 //         }
                 //     });
 
+                })(j)
 
                 }
 
@@ -1043,6 +1046,7 @@ self.input<%=manyArray[jj]%>ColumnArray = [
 
 
             for (var j in self.oneArray) {
+            (function(j) {
 
                 var inputAttRef;
                 var array = [];
@@ -1188,6 +1192,8 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                 //         alert("connection success");
                 //
                 //     },
+            })(j)
+
 
 
             }
