@@ -11,7 +11,7 @@ and open the template in the editor.
 
 
 
-<%var requirePara={'jpa:mi':true, 'jpa:ma': true, 'jpa:dmi': true, 'jpa:dma': true};
+<%var requirePara={'jpa:mi':true, 'jpa:ma': true, 'jpa:dmi': true, 'jpa:dma': true, 'jpa:po': true};
 var validationMap={'jpa:mi':'min','jpa:ma':'max','jpa:dmi':'min','jpa:dma':'max'};
 var inputTypeMap={'java.sql.Date':'date',  'java.time.LocalDateTime':'date-time',
 'String':'text', 'char':'text', 'Character':'text', 
@@ -113,7 +113,11 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
                                              <%if(BASIC[j]['jpa:bv']!=undefined){
                                                      for(var k in BASIC[j]['jpa:bv'][0]){
                                              if(k in requirePara) {-%>
+                                        <%if(k=="jpa:po"){%>
+                                             min = "0"
+                                                <%}else {%>
                                              <%=validationMap[k]%>="<%=BASIC[j]['jpa:bv'][0][k][0]['$']['v']%>"-%>
+                                    <%}%>
                                             <%}
                                             }
                                             }-%>
@@ -143,7 +147,7 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
 
                                             <%if(REPNAMEMAP[oneArray[i]]!= undefined) {-%>
 
-                                            <oj-select-one id="modal<%=oneArray[i]%>Table"  style="float:left; min-width:12em"
+                                            <oj-select-one id="modal<%=oneArray[i]%>Table"  style="float:left; min-width:10.5em"
                                                            value-option="{{<%-oneArray[i]%>_selectValOpt}}"
                                                            options="{{drop_<%-oneArray[i]%>dataProvider}}"
                                                              value="{{drop_input<%=oneArray[i]%>DataProvider}}">
@@ -268,8 +272,12 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
 
                         </div>
                     </div>
+                    <!--open dialog for one array-->
 
-                    <oj-dialog style="display:none;width:40vw;height:auto" id= "attSelectDialog_single" modality="modal">
+                    <%for(var i in oneArray) {%>
+
+
+                    <oj-dialog style="display:none;width:40vw;height:auto" id= "<%-oneArray[i]%>_attSelectDialog_single" modality="modal">
                         <div slot="header">
                             <span class="icon-info-circle" style="color: steelblue; float:left; margin-top: 3px; margin-right: 10px"></span>
 
@@ -277,11 +285,11 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
                           </span>
                         </div>
                         <div slot="body">
-                            <oj-table id="selectAttTable_single" aria-label="Select Attribute Table"
-                                      data='[[attArraydataprovider]]'
+                            <oj-table id="<%-oneArray[i]%>_selectAttTable_single" aria-label="Select Attribute Table"
+                                      data='[[<%-oneArray[i]%>_attArraydataprovider]]'
                                       selection-mode='{"row": "single"}'
                                       columns-default='{"sortable": "enabled"}'
-                                      columns='{{selectAttColumnArray_single}}'
+                                      columns='{{<%-oneArray[i]%>_selectAttColumnArray_single}}'
                                       on-selection-changed = '[[selectionListener_single]]'
                                       style='width: 100%; height:100%;'>
                                 <!--display='grid'-->
@@ -291,30 +299,30 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
 
                             </oj-table>
 
-                            <script type="text/html" id="checkbox_tmpl_single">
+                            <script type="text/html" id="<%-oneArray[i]%>_checkbox_tmpl_single">
                                 <td>
                                     <oj-checkboxset aria-hidden='true'
                                                     value='{{$context.row.Selected}}'
                                                     class='oj-checkboxset-no-chrome'
                                                     on-click = '[[$parent.syncCheckboxes]]'
                                                     data-bind="attr:{
-                                id: 'table_checkboxset' + $context.cellContext.status.rowIndex}"
+                                id: '<%-oneArray[i]%>_table_checkboxset' + $context.cellContext.status.rowIndex}"
 
                                     >
                                         <oj-option data-bind="attr:{
-                                id: 'table_checkbox' + $context.cellContext.status.rowIndex}" value="checked"></oj-option>
+                                id: '<%-oneArray[i]%>_table_checkbox' + $context.cellContext.status.rowIndex}" value="checked"></oj-option>
                                     </oj-checkboxset>
                                 </td>
                             </script>
-                            <script type="text/html" id="checkbox_hdr_tmpl_single">
+                            <script type="text/html" id="<%-oneArray[i]%>_checkbox_hdr_tmpl_single">
                                 <td>
                                     <oj-checkboxset value='[false]'
-                                                    id="table_checkboxset_hdr_single"
+                                                    id="<%-oneArray[i]%>_table_checkboxset_hdr_single"
                                                     disabled="true"
                                                     data-bind = "visible: !$parent.selectAllDisabled"
                                                     on-click = '[[$parent.syncCheckboxes]]'
                                                     class='oj-checkboxset-no-chrome'>
-                                        <oj-option id="table_checkbox_hdr" value="checked"></oj-option>
+                                        <oj-option id="<%-oneArray[i]%>_table_checkbox_hdr" value="checked"></oj-option>
                                     </oj-checkboxset>
                                 </td>
                             </script>
@@ -332,8 +340,11 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
                             </oj-button>
                         </div>
                     </oj-dialog>
+                    <%}%>
 
-                    <oj-dialog style="display:none;width:40vw;height:auto" id= "attSelectDialog_multi" modality="modal">
+                    <%for(var j in manyArray) {%>
+
+                    <oj-dialog style="display:none;width:40vw;height:auto" id= "<%-manyArray[j]%>_attSelectDialog_multi" modality="modal">
                         <div slot="header">
                             <span class="icon-info-circle" style="color: steelblue; float:left; margin-top: 3px; margin-right: 10px"></span>
 
@@ -341,12 +352,12 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
                           </span>
                         </div>
                         <div slot="body">
-                            <oj-table id="selectAttTable_multi" aria-label="Select Attribute Table"
-                                      data='[[attArraydataprovider]]'
+                            <oj-table id="<%-manyArray[j]%>_selectAttTable_multi" aria-label="Select Attribute Table"
+                                      data='[[<%-manyArray[j]%>_attArraydataprovider]]'
                                       selection-mode='{"row": "multiple"}'
                                       on-selection-changed = '[[selectionListener_multi]]'
                                       columns-default='{"sortable": "disabled"}'
-                                      columns='{{selectAttColumnArray_multi}}'
+                                      columns='{{<%-manyArray[j]%>_selectAttColumnArray_multi}}'
                                       style='width: 100%; height:100%;'>
                                 <!--display='grid'-->
 
@@ -355,7 +366,7 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
 
                             </oj-table>
 
-                            <script type="text/html" id="checkbox_tmpl_multi">
+                            <script type="text/html" id="<%-manyArray[j]%>_checkbox_tmpl_multi">
                                 <td>
                                     <oj-checkboxset aria-hidden='true'
                                                     value='{{$context.row.Selected}}'
@@ -363,23 +374,23 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
                                                     on-click = '[[$parent.syncCheckboxes]]'
 
                                                     data-bind="attr:{
-                                id: 'table_checkboxset_multi' + $context.cellContext.status.rowIndex}"
+                                id: '<%-manyArray[j]%>_table_checkboxset_multi' + $context.cellContext.status.rowIndex}"
 
                                     >
                                         <oj-option data-bind="attr:{
-                                id: 'table_checkbox_multi' + $context.cellContext.status.rowIndex}" value="checked"></oj-option>
+                                id: '<%-manyArray[j]%>_table_checkbox_multi' + $context.cellContext.status.rowIndex}" value="checked"></oj-option>
                                     </oj-checkboxset>
                                 </td>
                             </script>
-                            <script type="text/html" id="checkbox_hdr_tmpl_multi">
+                            <script type="text/html" id="<%-manyArray[j]%>_checkbox_hdr_tmpl_multi">
                                 <td>
                                     <oj-checkboxset value='[false]'
                                                     on-value-changed='[[$parent.selectAllListener]]'
-                                                    id="table_checkboxset_hdr_multi"
+                                                    id="<%-manyArray[j]%>_table_checkboxset_hdr_multi"
                                                     class='oj-checkboxset-no-chrome'
                                                     on-click = '[[$parent.syncCheckboxes]]'
                                     >
-                                        <oj-option id="table_checkbox_hdr_multi" value="checked"></oj-option>
+                                        <oj-option id="<%-manyArray[j]%>_table_checkbox_hdr_multi" value="checked"></oj-option>
                                     </oj-checkboxset>
                                 </td>
                             </script>
@@ -397,6 +408,8 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
                             </oj-button>
                         </div>
                     </oj-dialog>
+                    <%}%>
+
 
 
                 </div>

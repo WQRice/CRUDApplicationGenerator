@@ -18,12 +18,15 @@
                 <jpa:xwm/>
                 <jpa:xm/>
             </jpa:basic>
-            <jpa:basic attribute-type="double" v="true" xvt="" name="price" uil="Price" id="_153304088995120">
+            <jpa:basic attribute-type="Double" v="true" xvt="" name="price" uil="Price" id="_153304088995120">
                 <jpa:xwm/>
                 <jpa:xm/>
+                <jpa:bv>
+                    <jpa:po/>
+                </jpa:bv>
             </jpa:basic>
             <jpa:many-to-one primaryKey="false" connected-entity-id="_153304158229825" connected-attribute-id="_153304607773354" v="true" name="author" id="_153304607773253"/>
-            <jpa:one-to-one own="true" primaryKey="false" connected-entity-id="_153304163474231" v="true" name="genre" id="_153304192710142"/>
+            <jpa:many-to-one primaryKey="false" connected-entity-id="_153304163474231" v="true" name="genre" id="_153365075691513"/>
             <jpa:id attribute-type="Long" v="true" xvt="" name="id" id="_153299269077615">
                 <jpa:xwm/>
                 <jpa:xm/>
@@ -47,15 +50,22 @@
         </jpa:nq>
     </jpa:entity>
     <jpa:entity compositePrimaryKeyClass="AuthorPK" abs="false" class="Author" v="true" xre="false" m="false" rootElement="_153299268602212" id="_153304158229825">
+        <jpa:annotation e="true" n="@repName(firstName,lastName)"/>
         <jpa:ath>st8li</jpa:ath>
         <jpa:attributes>
             <jpa:basic attribute-type="String" v="true" xvt="" name="firstName" uil="First Name" id="_153304159370428">
                 <jpa:xwm/>
                 <jpa:xm/>
+                <jpa:bv>
+                    <jpa:nn/>
+                </jpa:bv>
             </jpa:basic>
             <jpa:basic attribute-type="String" v="true" xvt="" name="lastName" uil="Last Name" id="_153304160152029">
                 <jpa:xwm/>
                 <jpa:xm/>
+                <jpa:bv>
+                    <jpa:nn/>
+                </jpa:bv>
             </jpa:basic>
             <jpa:basic attribute-type="java.sql.Date" v="true" xvt="" name="birthDate" uil="Birthdate" id="_153304161605930">
                 <jpa:xwm/>
@@ -82,15 +92,22 @@
         </jpa:nq>
     </jpa:entity>
     <jpa:entity compositePrimaryKeyClass="GenrePK" abs="false" class="Genre" v="true" xre="false" m="false" rootElement="_153299268602212" id="_153304163474231">
+        <jpa:annotation e="true" n="@repName(description)"/>
         <jpa:ath>st8li</jpa:ath>
         <jpa:attributes>
             <jpa:basic attribute-type="String" v="true" xvt="" name="code" uil="Code" id="_153304165007834">
                 <jpa:xwm/>
                 <jpa:xm/>
+                <jpa:bv>
+                    <jpa:nn/>
+                </jpa:bv>
             </jpa:basic>
             <jpa:basic attribute-type="String" v="true" xvt="" name="description" uil="Description" id="_153304170498035">
                 <jpa:xwm/>
                 <jpa:xm/>
+                <jpa:bv>
+                    <jpa:nn/>
+                </jpa:bv>
             </jpa:basic>
             <jpa:id attribute-type="Long" v="true" xvt="" name="id" id="_153304163474332">
                 <jpa:xwm/>
@@ -124,7 +141,7 @@
     </jpa:c>
     <jpa:wsl>
         <jpa:ws n="Main" id="_153299268602213">
-            <i ref="_153304163474231" x="711" y="274"/>
+            <i ref="_153304163474231" x="711" y="265"/>
             <i ref="_153299269076714" x="418" y="252"/>
             <i ref="_153304158229825" x="150" y="239"/>
         </jpa:ws>
