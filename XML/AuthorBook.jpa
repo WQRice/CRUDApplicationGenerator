@@ -18,9 +18,12 @@
                 <jpa:xwm/>
                 <jpa:xm/>
             </jpa:basic>
-            <jpa:basic attribute-type="double" v="true" xvt="" name="price" uil="Price" id="_153304088995120">
+            <jpa:basic attribute-type="Double" v="true" xvt="" name="price" uil="Price" id="_153304088995120">
                 <jpa:xwm/>
                 <jpa:xm/>
+                <jpa:bv>
+                    <jpa:po/>
+                </jpa:bv>
             </jpa:basic>
             <jpa:many-to-one primaryKey="false" connected-entity-id="_153304158229825" connected-attribute-id="_153304607773354" v="true" name="author" id="_153304607773253"/>
             <jpa:many-to-one primaryKey="false" connected-entity-id="_153304163474231" v="true" name="genre" id="_153365075691513"/>
