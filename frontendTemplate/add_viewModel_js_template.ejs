@@ -177,10 +177,10 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojcheckboxset'
             var repName = "";
             var namelist = self.dropdownMap[property];
             for (var i=0; i<namelist.length; i++) {
-                if(data[namelist[i]]!=null) {
+                if(data[namelist[i]]!=undefined) {
                     repName = repName + data[namelist[i]];
                 }else{
-                    repName = repName + namelist[i];
+                    repName = repName + namelist[i].slice(1,namelist[i].length-1);
                 }
             }
 

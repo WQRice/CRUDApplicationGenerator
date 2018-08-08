@@ -142,11 +142,11 @@ function(oj, ko, $)
                                     <%if(REPNAMEMAP[oneArray[j]]!= undefined) {-%>
                                       var repname = "";
                                       <%for(var jj in REPNAMEMAP[oneArray[j]]){-%>
-                                        if (<%-REPNAMEMAP[oneArray[j]][jj]%>.charAt(0)=='\''||<%-REPNAMEMAP[oneArray[j]][jj]%>.charAt(0)=='\"') {
+                                        <%if(REPNAMEMAP[oneArray[j]][jj].charAt(0)=='\''||REPNAMEMAP[oneArray[j]][jj].charAt(0)=='\"') {%>
                                             repname = repname + <%-REPNAMEMAP[oneArray[j]][jj]%>;
-                                        }else if(data0[<%-REPNAMEMAP[oneArray[j]][jj]%>]!=undefined){
-                                            repname = repname + data0['<%-REPNAMEMAP[oneArray[j]][jj]%>'];
-                                        }
+                                        <%}else if(REPNAMEMAP[oneArray[j]][jj]!=null){%>
+                                            repname = repname + data0[<%-REPNAMEMAP[oneArray[j]][jj]%>];
+                                           <%}%>
                                       <%}-%>
                                       topush['<%-CLASSNAME%>_<%-downFirst(oneArray[j])%>'] = repname;
                                     <%} else {-%>
