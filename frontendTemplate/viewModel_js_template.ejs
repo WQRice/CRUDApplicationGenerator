@@ -144,7 +144,7 @@ function(oj, ko, $)
                                       <%for(var jj in REPNAMEMAP[oneArray[j]]){-%>
                                         <%if(REPNAMEMAP[oneArray[j]][jj].trim().charAt(0)=='\''||REPNAMEMAP[oneArray[j]][jj].trim().charAt(0)=='\"') {%>
                                             repname = repname + <%-REPNAMEMAP[oneArray[j]][jj].trim()%>;
-                                        <%}else if(REPNAMEMAP[oneArray[j]][jj]!=undefined||REPNAMEMAP[oneArray[j]][jj]!=null){%>
+                                        <%}else if(REPNAMEMAP[oneArray[j]][jj].trim()!=''){%>
                                             repname = repname + data0.<%-REPNAMEMAP[oneArray[j]][jj].trim()%>;
                                            <%}%>
                                       <%}-%>
