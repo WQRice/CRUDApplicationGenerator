@@ -145,7 +145,7 @@ function(oj, ko, $)
                                         if (<%-REPNAMEMAP[oneArray[j]][jj]%>.charAt(0)=='\''||<%-REPNAMEMAP[oneArray[j]][jj]%>.charAt(0)=='\"') {
                                             repname = repname + <%-REPNAMEMAP[oneArray[j]][jj]%>;
                                         }else if(data0[<%-REPNAMEMAP[oneArray[j]][jj]%>]!=undefined){
-                                            repname = repname + data0.<%-REPNAMEMAP[oneArray[j]][jj]%>;
+                                            repname = repname + data0['<%-REPNAMEMAP[oneArray[j]][jj]%>'];
                                         }
                                       <%}-%>
                                       topush['<%-CLASSNAME%>_<%-downFirst(oneArray[j])%>'] = repname;
