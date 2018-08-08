@@ -178,16 +178,24 @@ self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>(rootViewModel.fro
                 // alert(url);
                     self[self.attMap[self.oneArray[i]].dropInputAttData](null);
                 //self[self.attMap[self.oneArray[i]].inputAttRef].removeAll();
-                    getAssociatedAtt(url, function (output) {
+                             $.ajax({
+                    type:"GET",
+                    url: url
+                })
+                    .done(function (data0) {
+                        //
+                        // professorInput.ele = data0;
+                        // alert(JSON.stringify(professorInput.ele));
+                        self[self.oneArray[i] + "_selectValOpt"](
+                            {
+                                value: data0.id,
+                                label: self.repNameCalc(self.oneArray[i], data0)
+                            }
+                        );
 
-                //delete output["_links"];
-
-                self[self.oneArray[i] + "_selectValOpt"](
-                        {
-                        value: output.id,
-                        label: self.repNameCalc(self.oneArray[i], output)
-                        }
-                );
+                    }).fail(function (data1){
+                    self[self.oneArray[i] + "_selectValOpt"](null);
+                    // professorInput(null);
                 });
 
             }
@@ -211,9 +219,14 @@ self.input<%=myself.CLASSNAME + myself.BASIC[i]['$']['name']%>(rootViewModel.fro
                         for (var ii in output["_embedded"][self.manyArray[j]]) {
                             delete output["_embedded"][self.manyArray[j]][ii]["_links"];
                             self[self.attMap[self.manyArray[j]].inputAttRef].push(output["_embedded"][self.manyArray[j]][ii]);
+                            if (ii == output["_embedded"][self.manyArray[j]].length-1) {
+                            self[self.attMap[self.manyArray[j]].inputAttRef].sort(function (left, right) {
+                            return left["id"] == right["id"] ? 0 : (left["id"] < right["id"]  ? -1 : 1)
+                            });
                         }
 
-                    });
+                    }
+                });
                     })(j);
 
 
@@ -868,22 +881,147 @@ self.input<%=manyArray[jj]%>ColumnArray = [
             });
 
             // ready for updating attribute entities
-
-            var defs = [new $.Deferred(), new $.Deferred()];
-
-
-            var queuechain1 =defs[0];
-            var queuechain2 =defs[1];
+            var def = new $.Deferred();
+            var queuechain1 =def;
 
 
-            if (self.manyArray.length == 0) {
-            defs[0].resolve(true);
+            //if (self.manyArray.length == 0) {
+            //defs[0].resolve(true);
+            //}
+
+            var addUrls = [];
+            var deleteEntities = [];
+            for (var ii in self.oneArray) {
+                (function (ii) {
+                    var inputAttRef;
+                    var array = [];
+
+                    //var inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
+
+                    if (self.dropdownMap.hasOwnProperty(self.oneArray[ii])) {
+                        inputAttRef = self.attMap[self.oneArray[ii]].dropInputAttData;
+                        if (self[inputAttRef]() != null) {
+                            array.push({
+                                id: self[inputAttRef]()
+                            });
+                            //attId = "value";
+                        }
+                    } else {
+                        inputAttRef = self.attMap[self.oneArray[ii]].inputAttRef;
+                        if (self[inputAttRef]()[0] != null) {
+                            array = self[inputAttRef]();
+                        }
+                    }
+
+
+                    if (array.length > 0) {
+
+                        var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + self.oneArray[ii] + "/" + array[0].id;
+                        addUrls.push(associationUrl);
+                    } else {
+                        deleteEntities.push(self.oneArray[ii]);
+                    }
+                })(ii)
             }
 
 
-            for (var j in self.manyArray) {
-            (function(j) {
 
+
+
+            var addcontainer = function (count, count_del) {
+                if (count >= 0) {
+                    $.ajax({
+                            type: "POST",
+                            url: addUrls[count],
+                            success: function () {
+                            //    alert("connection success one");
+                                count--;
+                                addcontainer(count);
+                            },
+                            error: function (xhr) {
+                                console.log('error', xhr);
+                                // alert("connection failed");
+                            }
+                        }
+                    );
+                } else {
+                    deletecontainer(count_del);
+                }
+            };
+
+            var deletecontainer = function (count) {
+                if (count >= 0) {
+                    $.ajax({
+                        type: "GET",
+                        url: "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + deleteEntities[count]
+                    }).done(
+                        function (output) {
+                            // alert(JSON.stringify(output));
+                            // var q = jQuery.Deferred(),
+                            //     queuechain = q;
+
+                            $.ajax({
+                                url: "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + deleteEntities[count],
+                                type: "DELETE",
+                                success: function (response) {
+                                    //  alert("delete success one");
+                                    $.ajax({
+                                        url: "http://localhost:8080/" + deleteEntities[count] + "/" + output.id + "/<%-downFirst(myself.CLASSNAME)%>In" + deleteEntities[count] + "/" + self.input<%=myself.CLASSNAME%>Id(),
+                                        type: "DELETE",
+                                        success: function (response) {
+                                            //  alert("delete success one");
+                                            console.log(response);
+                                            // if (count == 0) {
+                                            //     oj.Router.rootInstance.go("<%=myself.CLASSNAME%>");
+                                            //
+                                            // } else {
+                                            count--;
+                                            deletecontainer(count);
+                                            // }
+
+                                        },
+                                        error: function (e) {
+                                            console.log(e);
+                                            //  alert("delete failed one");
+                                        }
+                                    })
+
+                                },
+
+                                error: function (e) {
+                                    console.log(e);
+                                    //  alert("delete failed");
+
+                                }
+                            });
+                        }
+
+
+                    ).fail(function () {
+
+                            count--;
+                            deletecontainer(count);
+                            // }
+                        }
+                    )
+                } else {
+                    queuechain1.done(
+                        function () {
+
+                        }
+                    );
+                    def.resolve(true);
+                    oj.Router.rootInstance.go("<%=myself.CLASSNAME%>");
+                }
+
+            };
+
+
+
+                    var manyAssociation = function(j){
+           // (function(j) {
+
+                if(j>=0) {
 
                 var inputAttRefMany = self.attMap[self.manyArray[j]].inputAttRef;
 
@@ -909,120 +1047,227 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                         // var id = output["_embedded"][self.manyArray[j]][k].id; // this id is in the list of available list
                         //
 
+                        var oldIdList = [];
                         for (var i = 0; i < oldList[self.manyArray[j]].length; i++) {
-                            var overlap = false;
-                            for (var jj = 0; jj < self[inputAttRefMany]().length; jj++) {
-
-                                if (self[inputAttRefMany]()[jj].id === oldList[self.manyArray[j]][i].id) {
-                                    //
-                                    overlap = true;
-                                    break;
-                                }
-                            }
-                            if (overlap!==true) {
-
-                                //need to delete the old relationship
-                                queuechain1 = queuechain1.then(
-                                    $.ajax({
-                                        url: "http://localhost:8080/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + self.attMap[self.manyArray[j]].attInSelfName +"/" + oldList[self.manyArray[j]][i].id,
-
-                                        type: "DELETE",
-                                        success: function (response) {
-                                            //alert("delete success");
-
-                                        },
-
-                                        error: function (e) {
-                                            console.log(e);
-                                            //alert("delete failed");
-
-                                        }
-                                    })
-                                );
-
-
-                                //delete from the other direction
-                                queuechain1 = queuechain1.then(
-                                    $.ajax({
-                                        url: "http://localhost:8080/"+self.manyArray[j]+"/" + oldList[self.manyArray[j]][i].id + "/<%-downFirst(myself.CLASSNAME)%>In" + self.manyArray[j]+"/" + self.input<%=myself.CLASSNAME%>Id(),
-                                        type: "DELETE",
-                                        success: function (response) {
-                                            //alert("delete success");
-                                            console.log(response);
-
-                                        },
-                                        error: function (e) {
-                                            console.log(e);
-                                            //alert("delete failed");
-                                        }
-                                    })
-                                );
-
-                            }
+                            // var overlap = false;
+                            // for (var jj = 0; jj < self[inputAttRefMany]().length; jj++) {
+                            //
+                            //     if (self[inputAttRefMany]()[jj].id === oldList[self.manyArray[j]][i].id) {
+                            //         //
+                            //         overlap = true;
+                            //         break;
+                            //     }
+                            // }
+                            oldIdList.push(oldList[self.manyArray[j]][i].id);
 
                         }
+
+
+                        var addListMany = [];
+                        for (var jj = 0; jj < self[inputAttRefMany]().length; jj++) {
+
+                            // (function (jj) {
+                            //
+                            //     var overlap = false;
+                            //     for (var i = 0; i < oldList[self.manyArray[j]].length; i++) {
+                            //
+                            //         if (oldList[self.manyArray[j]][i].id === self[inputAttRefMany]()[jj].id) {
+                            //             //
+                            //             overlap = true;
+                            //             break;
+                            //
+                            //         }
+                            //     }
+                            // }
+                            addListMany.push(self[inputAttRefMany]()[jj].id);
+                        }
+
+                        var deleteOld = function(entcnt, oldIdList, cnt) {
+                            if (cnt >= 0) {
+                                $.ajax({
+                                    url: "http://localhost:8080/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + self.attMap[self.manyArray[entcnt]].attInSelfName + "/" + oldIdList[cnt],
+
+                                    type: "DELETE",
+                                    success: function (response) {
+                                        //alert("delete success");
+                                        $.ajax({
+                                            url: "http://localhost:8080/" + self.manyArray[entcnt] + "/" + oldIdList[cnt] + "/<%-downFirst(myself.CLASSNAME)%>In" + self.manyArray[entcnt] + "/" + self.input<%=myself.CLASSNAME%>Id(),
+                                            type: "DELETE",
+                                            success: function (response) {
+                                                //alert("delete success");
+                                                cnt--;
+                                                deleteOld(entcnt, oldIdList, cnt);
+                                            },
+                                            error: function (e) {
+                                                console.log(e);
+                                                //alert("delete failed");
+                                            }
+                                        })
+                                    },
+
+                                    error: function (e) {
+                                        console.log(e);
+                                        //alert("delete failed");
+
+                                    }
+                                })
+                            } else {
+                                addNew(entcnt, addListMany, addListMany.length - 1);
+                            }
+                        }
+
+                        //);
+
+                var addNew = function(entcnt, addListMany, cnt) {
+                    if(cnt>=0){
+                    var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + self.manyArray[entcnt] + "/" + addListMany[cnt];
+                    //alert("post many" + associationUrl);
+                        $.ajax({
+                            type: "POST",
+                            url: associationUrl,
+                            success: function (returndata) {
+                                // alert("connection success many");
+                                cnt--;
+                                addNew(entcnt, addListMany, cnt);
+
+                            },
+                            error: function (xhr) {
+                                console.log('error', xhr);
+                                console.log(associationUrl);
+                            }
+                        })
+
+                    }else {
+                        j--;
+                    manyAssociation(j);
+                    }
+
+
+                }
+
+                            //delete from the other direction
+                            // queuechain1 = queuechain1.then(
+                            //     $.ajax({
+                            //         url: "http://localhost:8080/"+self.manyArray[j]+"/" + oldList[self.manyArray[j]][i].id + "/authorIn" + self.manyArray[j]+"/" + self.inputAuthorId(),
+                            //         type: "DELETE",
+                            //         success: function (response) {
+                            //             //alert("delete success");
+                            //             console.log(response);
+                            //
+                            //         },
+                            //         error: function (e) {
+                            //             console.log(e);
+                            //             //alert("delete failed");
+                            //         }
+                            //     })
+                            // );
+            //};
+            deleteOld(j, oldIdList, oldIdList.length-1);
+
+                            // if (overlap!==true) {
+                            //
+                            //     //need to delete the old relationship
+                            //     queuechain1 = queuechain1.then(
+                            //         $.ajax({
+                            //             url: "http://localhost:8080/Author/" + self.inputAuthorId() + "/" + self.attMap[self.manyArray[j]].attInSelfName +"/" + oldList[self.manyArray[j]][i].id,
+                            //
+                            //             type: "DELETE",
+                            //             success: function (response) {
+                            //                 //alert("delete success");
+                            //
+                            //             },
+                            //
+                            //             error: function (e) {
+                            //                 console.log(e);
+                            //                 //alert("delete failed");
+                            //
+                            //             }
+                            //         })
+                            //     );
+                            //
+                            //
+                            //     //delete from the other direction
+                            //     queuechain1 = queuechain1.then(
+                            //         $.ajax({
+                            //             url: "http://localhost:8080/"+self.manyArray[j]+"/" + oldList[self.manyArray[j]][i].id + "/authorIn" + self.manyArray[j]+"/" + self.inputAuthorId(),
+                            //             type: "DELETE",
+                            //             success: function (response) {
+                            //                 //alert("delete success");
+                            //                 console.log(response);
+                            //
+                            //             },
+                            //             error: function (e) {
+                            //                 console.log(e);
+                            //                 //alert("delete failed");
+                            //             }
+                            //         })
+                            //     );
+                            //
+                            // }
+
+                       // }
 
                         //alert(inputAttRefMany);
                         //alert("input length many" +JSON.stringify(self[inputAttRefMany]()));
 
-                            for (var jj = 0; jj < self[inputAttRefMany]().length; jj++) {
+                            // for (var jj = 0; jj < self[inputAttRefMany]().length; jj++) {
+                            //
+                            //     (function (jj) {
+                            //
+                            //         var overlap = false;
+                            //     for (var i = 0; i < oldList[self.manyArray[j]].length; i++) {
+                            //
+                            //         if (oldList[self.manyArray[j]][i].id === self[inputAttRefMany]()[jj].id) {
+                            //             //
+                            //             overlap = true;
+                            //             break;
+                            //
+                            //         }
+                            //     }
+                            //     //alert("overlap"+overlap);
+                            //
+                            //     if (overlap != true) {
+                            //         //post the newly added
+                            //         //alert("start post because not overlap");
+                            //         var associationUrl = "http://localhost:8080/api/Author/" + self.inputAuthorId() + "/" + self.manyArray[j] + "/" + self[inputAttRefMany]()[jj].id;
+                            //         //alert("post many" + associationUrl);
+                            //         queuechain1 = queuechain1.then(
+                            //             $.ajax({
+                            //                 type: "POST",
+                            //                 url: associationUrl,
+                            //                 success: function (returndata) {
+                            //                    // alert("connection success many");
+                            //
+                            //                 },
+                            //                 error: function (xhr) {
+                            //                     console.log('error', xhr);
+                            //                     console.log(associationUrl);
+                            //                 }
+                            //             })
+                            //         )
+                            //     }}(jj));
+                            // }
 
-                                (function (jj) {
+                        //if (j==self.manyArray.length-1) {
+                        //    queuechain1.done(
+                        //        function () {
 
-                                    var overlap = false;
-                                for (var i = 0; i < oldList[self.manyArray[j]].length; i++) {
-
-                                    if (oldList[self.manyArray[j]][i].id === self[inputAttRefMany]()[jj].id) {
-                                        //
-                                        overlap = true;
-                                        break;
-
-                                    }
-                                }
-                                //alert("overlap"+overlap);
-
-                                if (overlap != true) {
-                                    //post the newly added
-                                    //alert("start post because not overlap");
-                                    var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + self.manyArray[j] + "/" + self[inputAttRefMany]()[jj].id;
-                                    //alert("post many" + associationUrl);
-                                    queuechain1 = queuechain1.then(
-                                        $.ajax({
-                                            type: "POST",
-                                            url: associationUrl,
-                                            success: function (returndata) {
-                                               // alert("connection success many");
-
-                                            },
-                                            error: function (xhr) {
-                                                console.log('error', xhr);
-                                                console.log(associationUrl);
-                                            }
-                                        })
-                                    )
-                                }}(jj));
-                            }
-
-                        if (j==self.manyArray.length-1) {
-                            queuechain1.done(
-                                function () {
-
-                                }
-                            );
-                            defs[0].resolve(true);
-                        }
+                        //        }
+                        //    );
+                        //    defs[0].resolve(true);
+                        //}
 
 
                     }).fail(function (data1){
 
-                    if (j==self.manyArray.length-1) {
-                        queuechain1.done(
-                            function () {
+                    //if (j==self.manyArray.length-1) {
+                    //    queuechain1.done(
+                    //        function () {
 
-                            }
-                        );
-                        defs[0].resolve(true);
-                    }
+                     //       }
+                    //    );
+                     //   defs[0].resolve(true);
+                    //}
 
                 });
                 //
@@ -1033,179 +1278,33 @@ self.input<%=manyArray[jj]%>ColumnArray = [
                 //             handleData(data);
                 //         }
                 //     });
+            }else {
+         addcontainer(addUrls.length - 1, deleteEntities.length - 1);
 
-                })(j)
-
-                }
-
-
-
-            if (self.oneArray.length == 0) {
-            defs[1].resolve(true);
-            }
-
-
-            for (var j in self.oneArray) {
-            (function(j) {
-
-                var inputAttRef;
-                var array = [];
-
-                //var inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
-
-                if(self.dropdownMap.hasOwnProperty(self.oneArray[j])){
-                    inputAttRef = self.attMap[self.oneArray[j]].dropInputAttData;
-                    if (self[inputAttRef]()!=null){
-                        array.push({
-                        id : self[inputAttRef]()
-                        });
-                    //attId = "value";
-                    }
-                        } else {
-                            inputAttRef = self.attMap[self.oneArray[j]].inputAttRef;
-                            if(self[inputAttRef]()[0]!=null){
-                            array = self[inputAttRef]();
-                            }
-                        }
-
-
-                if (array.length > 0) {
-
-                    var associationUrl = "http://localhost:8080/api/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + self.oneArray[j] + "/" + array[0].id;
-
-                   // alert(associationUrl);
-                    queuechain2 = queuechain2.then(
-                        $.ajax({
-                            type: "POST",
-                            url: associationUrl,
-                            success: function () {
-                               // alert("connection success one");
-
-                            },
-                            error: function (xhr) {
-                                console.log('error', xhr);
-                                //alert("connection failed");
-                            }
-                        }));
-
-                    if (j == self.oneArray.length - 1) {
-                        queuechain2.done(
-                            function () {
-
-                            }
-                        );
-                        defs[1].resolve(true);
-                    }
-                }
-
-
-                    //
-                    // queuechain1.done();
-                    // q1.resolve();
-                 else {
-                    var attAssociationUrl = "http://localhost:8080/<%=myself.CLASSNAME%>/" + self.input<%=myself.CLASSNAME%>Id() + "/" + self.attMap[self.oneArray[j]].attInSelfName;
-
-                    $.ajax({
-                        type: "GET",
-                        url: attAssociationUrl
-                    }).done(
-                        function (output) {
-                           // alert(JSON.stringify(output));
-                            // var q = jQuery.Deferred(),
-                            //     queuechain = q;
-
-                            queuechain2 = queuechain2.then(
-                                $.ajax({
-                                    url: attAssociationUrl,
-                                    type: "DELETE",
-                                    success: function (response) {
-                                      //  alert("delete success one");
-
-                                    },
-
-                                    error: function (e) {
-                                        console.log(e);
-                                      //  alert("delete failed");
-
-                                    }
-                                })
-                            );
-
-
-                            queuechain2 = queuechain2.then(
-                                $.ajax({
-                                    url: "http://localhost:8080/"+ self.oneArray[j]+"/" + output.id + "/<%-downFirst(myself.CLASSNAME)%>In" + self.oneArray[j]+"/" + self.input<%=myself.CLASSNAME%>Id(),
-                                    type: "DELETE",
-                                    success: function (response) {
-                                      //  alert("delete success one");
-                                        console.log(response);
-
-                                    },
-                                    error: function (e) {
-                                        console.log(e);
-                                      //  alert("delete failed one");
-                                    }
-                                })
-                            );
-                            // queuechain2.done(function(){
-                            //     // oj.Router.rootInstance.go("Course");
-                            //
-                            // });
-                            //
-                            // q.resolve();
-                            if (j==self.oneArray.length-1) {
-                                queuechain2.done(
-                                    function () {
-
-                                    }
-                                );
-                                defs[1].resolve(true);
-                            }
-                        }
-                    ).fail(
-                        function(){
-                            // oj.Router.rootInstance.go("Course");
-                            if (j==self.oneArray.length-1) {
-                                queuechain2.done(
-                                    function () {
-
-                                    }
-                                );
-                                defs[1].resolve(true);
-                            }
-
-                        }
-                    );
-
-
-
-
-
+        }
+                //})(j)
 
                 }
+        manyAssociation(self.manyArray.length-1);
 
+        
 
-                // $.ajax({
-                //     type: "POST",
-                //     url: associationUrl,
-                //     success: function () {
-                //         alert("connection success");
-                //
-                //     },
-            })(j)
-
-
-
-            }
-
-            $.when.apply($, defs).then(function() {
-                    oj.Router.rootInstance.go("<%=myself.CLASSNAME%>");
-            })
         };
 
 
         self.backButtonClick=function(){
             //alert("hi, I going back to page: "+oj.Router.rootInstance.retrieve().page);
+            for (var property in self.attMap){
+                if(self.attMap.hasOwnProperty(property)){
+                    if(!self.dropdownMap.hasOwnProperty(property)){
+
+                    } else {
+                        self[self.attMap[property].dropInputAttData](null);
+                        self[property + "_selectValOpt"](null);
+                    }
+                }
+
+            }
             oj.Router.rootInstance.go("<%=myself.CLASSNAME%>");
         };
 
