@@ -86,7 +86,7 @@ function(oj, ko, $)
                     self.saveIsDisable(false);
                 }
 
-            alert(JSON.stringify(oj.Router.rootInstance.retrieve()));
+         //   alert(JSON.stringify(oj.Router.rootInstance.retrieve()));
 
         }
         else {
@@ -142,9 +142,11 @@ function(oj, ko, $)
                                     <%if(REPNAMEMAP[oneArray[j]]!= undefined) {-%>
                                       var repname = "";
                                       <%for(var jj in REPNAMEMAP[oneArray[j]]){-%>
-                                        if (data0.<%-REPNAMEMAP[oneArray[j]][jj]%>!=null) {
-                                        repname = repname + data0.<%-REPNAMEMAP[oneArray[j]][jj]%> + "<%-(jj == REPNAMEMAP[oneArray[j]].length-1) ? "" : " "%>";
-                                        }
+                                        <%if(REPNAMEMAP[oneArray[j]][jj].trim().charAt(0)=='\''||REPNAMEMAP[oneArray[j]][jj].trim().charAt(0)=='\"') {%>
+                                            repname = repname + <%-REPNAMEMAP[oneArray[j]][jj].trim()%>;
+                                        <%}else if(REPNAMEMAP[oneArray[j]][jj].trim()!=''){%>
+                                            repname = repname + data0.<%-REPNAMEMAP[oneArray[j]][jj].trim()%>;
+                                           <%}%>
                                       <%}-%>
                                       topush['<%-CLASSNAME%>_<%-downFirst(oneArray[j])%>'] = repname;
                                     <%} else {-%>

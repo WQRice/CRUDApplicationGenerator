@@ -51,7 +51,7 @@ module.exports = function (jpaFile, packageName, appName) {
                 annoList.push(annotations[j]['$']['n']);
                 if (annotations[j]['$']['n'].substr(0, 8) == "@repName") {
                     var compoList = annotations[j]['$']['n'].substring(9, annotations[j]['$']['n'].length - 1);
-                    repNameMap[className[0].toUpperCase() + className.slice(1)] = compoList.split(/,\s*/);
+                    repNameMap[className[0].toUpperCase() + className.slice(1)] = compoList.split(',');
                 }
             }
 

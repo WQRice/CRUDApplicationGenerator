@@ -12,7 +12,7 @@ and open the template in the editor.
 -->
 
 
-<%var requirePara={'jpa:mi':true, 'jpa:ma': true, 'jpa:dmi': true, 'jpa:dma': true};
+<%var requirePara={'jpa:mi':true, 'jpa:ma': true, 'jpa:dmi': true, 'jpa:dma': true, 'jpa:po': true};
 var validationMap={'jpa:mi':'min','jpa:ma':'max','jpa:dmi':'min','jpa:dma':'max'};
 var inputTypeMap={'java.sql.Date':'date', 'java.time.LocalDateTime':'date-time',
 'String':'text', 'char':'text', 'Character':'text', 
@@ -107,7 +107,11 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
                                 <%if(BASIC[j]['jpa:bv']!=undefined){
                                         for(var k in BASIC[j]['jpa:bv'][0]){
                                 if(k in requirePara) {-%>
+                                        <%if(k=="jpa:po"){%>
+                                        min = "0"
+                                        <%}else {%>
                                 <%=validationMap[k]%>="<%=BASIC[j]['jpa:bv'][0][k][0]['$']['v']%>"-%>
+                                    <%}-%>
                                 <%}
                                 }
                                 }-%>
@@ -136,7 +140,7 @@ var manyArray = forwardMap[CLASSNAME].oneToMany.concat(forwardMap[CLASSNAME].man
 
                                     <%if(REPNAMEMAP[oneArray[i]]!= undefined) {-%>
 
-                                      <oj-select-one id="modal<%=oneArray[i]%>Table"  style="float:left; min-width:12em"
+                                      <oj-select-one id="modal<%=oneArray[i]%>Table"  style="float:left; min-width:10.5em"
                                                      value-option="{{<%=oneArray[i]%>_selectValOpt}}"
 
                                                        options="{{drop_<%-oneArray[i]%>dataProvider}}"
