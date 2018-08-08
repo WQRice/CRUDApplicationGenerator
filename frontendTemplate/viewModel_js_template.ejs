@@ -142,8 +142,10 @@ function(oj, ko, $)
                                     <%if(REPNAMEMAP[oneArray[j]]!= undefined) {-%>
                                       var repname = "";
                                       <%for(var jj in REPNAMEMAP[oneArray[j]]){-%>
-                                        if (data0.<%-REPNAMEMAP[oneArray[j]][jj]%>!=null) {
-                                        repname = repname + data0.<%-REPNAMEMAP[oneArray[j]][jj]%> + "<%-(jj == REPNAMEMAP[oneArray[j]].length-1) ? "" : " "%>";
+                                        if (data0.<%-REPNAMEMAP[oneArray[j]][jj]%>!=undefined) {
+                                            repname = repname + data0.<%-REPNAMEMAP[oneArray[j]][jj]%>;
+                                        }else{
+                                            repname = repname + <%-REPNAMEMAP[oneArray[j]][jj]%>;
                                         }
                                       <%}-%>
                                       topush['<%-CLASSNAME%>_<%-downFirst(oneArray[j])%>'] = repname;

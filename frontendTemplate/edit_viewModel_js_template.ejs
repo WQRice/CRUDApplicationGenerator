@@ -249,8 +249,9 @@ self.repNameCalc = function(property, data){
     var namelist = self.dropdownMap[property];
         for (var i=0; i<namelist.length; i++) {
             if(data[namelist[i]]!=null) {
-                var space = (i == namelist.length-1) ? "" : " ";
-                repName = repName + data[namelist[i]] +space ;
+                repName = repName + data[namelist[i]];
+            }else{
+                repName = repName + namelist[i];
             }
         }
     return repName;
