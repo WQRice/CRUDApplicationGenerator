@@ -33,3 +33,4 @@ yo rice-web-generator
 - 
 
 ## License
+## Contact
