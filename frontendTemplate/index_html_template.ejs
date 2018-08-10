@@ -26,7 +26,7 @@
   ***************************** IMPORTANT INFORMATION ************************************ -->
 <html lang="en-us">
   <head>
-    <title>Rice JET - <%=dataArray[0].PACKAGENAME%></title>
+    <title>RiceBoot - <%=dataArray[0].PACKAGENAME%></title>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1">
@@ -149,7 +149,7 @@
                       selection="{{selectedItem}}"
                       current-item="{{currentItem}}"
                       edge="top"
-                      style="height:45px"
+                      style="height:49px"
                       data="[[tabDataSource]]"
                       item.renderer="[[oj.KnockoutTemplateUtils.getRenderer('entity_template', true)]]"
                       on-oj-remove="[[removeTab]]">
