@@ -28,8 +28,3 @@ yo rice-web-generator
 ## Usage
 - This project is designed to boost the development process of CRUD web application in IT Department of Rice University by generating source code of an initial CRUD Web Application based on user-defined ERD (Entity Relationship Diagram) specified in a XML file.
 - You will build ERD in Jeddict with visualizing tools and get an output XML file contains the entity relationship information. This program, which acts similar to a compiler, will then parse this XML file and generate all the source code of a CRUD web application corresponding to the ERD.
-## Instruction:
-**Use jeddict to build your model.**
-- 
-
-## License
